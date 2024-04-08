@@ -9,4 +9,5 @@ spring:
       ddl-auto: create
     properties:
       format_sql: true
-      dialect: org.hibernate.dialect.MySQL8Dialect
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
