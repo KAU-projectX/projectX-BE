@@ -41,7 +41,7 @@ jobs:
           ./gradlew jib \
           -Djib.to.auth.username=${{ secrets.DOCKERHUB_USERNAME }} \
           -Djib.to.auth.password=${{ secrets.DOCKERHUB_PASSWORD }} \
-          -Djib.to.image="${{ secrets.DOCKERHUB_USERNAME }}/text-me-docker-repo:${GITHUB_REF##*/}"
+          -Djib.to.image="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:${GITHUB_REF##*/}"
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
