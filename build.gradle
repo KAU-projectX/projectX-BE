@@ -7,9 +7,15 @@ plugins {
 }
 
 jib{
-	to{
-		image = "ifyang/kau_project_x"
-		tags = ["latest"]
+	from {
+		image = 'openjdk:17-jdk-slim'
+	}
+	to {
+		image = 'ifyang/kau_project_x'
+		auth {
+			username = project.findProperty('jibUsername') ?: ''
+			password = project.findProperty('jibPassword') ?: ''
+		}
 	}
 }
 
