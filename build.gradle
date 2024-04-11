@@ -3,6 +3,20 @@ plugins {
 	id 'org.springframework.boot' version '3.2.3'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'com.google.cloud.tools.jib' version '3.4.2'
+}
+
+jib{
+	from {
+		image = 'openjdk:17-jdk-slim'
+	}
+	to {
+		image = 'ifyang/kau_project_x'
+		auth {
+			username = project.findProperty('jibUsername') ?: ''
+			password = project.findProperty('jibPassword') ?: ''
+		}
+	}
 }
 
 group = 'com.projectX'
