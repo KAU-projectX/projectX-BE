@@ -42,17 +42,13 @@ jobs:
           -Djib.to.auth.username=${{ secrets.DOCKERHUB_USERNAME }} \
           -Djib.to.auth.password=${{ secrets.DOCKERHUB_PASSWORD }} \
           -Djib.to.image="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:${GITHUB_REF##*/}"
-
-      - name: Deploy to server
-        uses: appleboy/ssh-action@master
-        id: deploy
+          
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v22
         with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          envs: GITHUB_SHA
-          script: |
-            sudo docker rm -f $(docker ps -qa)
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:develop
-            sudo docker-compose up -d
-            sudo docker image prune -f
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ secrets.AWS_REGION }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          deployment_package: ${{ secrets.EB_DEPLOYMENT_PACKAGE }}
