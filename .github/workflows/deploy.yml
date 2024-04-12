@@ -20,6 +20,10 @@ jobs:
         with:
           java-version: '17'
           distribution: "adopt"
+          
+      - name: Build Number
+        id: build-number
+        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
       - name: Make application.properties
         run: |
@@ -52,3 +56,6 @@ jobs:
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           application_name: ${{ secrets.EB_APPLICATION_NAME }}
           deployment_package: ${{ secrets.EB_DEPLOYMENT_PACKAGE }}
+          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
+          version_description: Version ${{steps.build-number.outputs.BUILD_NUMBER}} deployed via github actions ${{ github.sha }}
+          wait_for_deployment: 60
