@@ -22,7 +22,7 @@ public class Sido extends BaseEntity {
     @Comment("시도 식별자")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Comment("시도 코드")
     private Integer sidoCode;
 
