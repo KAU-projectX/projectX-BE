@@ -51,13 +51,13 @@ jobs:
         uses: appleboy/ssh-action@master
         id: deploy
         with:
-          host: ${{ secrets.HOST }} // AWS 탄력적 IP
+          host: ${{ secrets.HOST }} 
           username: ubuntu
-          key: ${{ secrets.KEY }} // EC2 PEM 
+          key: ${{ secrets.KEY }} 
           port : 22
           envs: GITHUB_SHA
           script: |
-            sudo docker rm -f $(docker ps -qa) //구동중인 모든 도커 컨테이너들을 중지시키고 삭제
+            sudo docker rm -f $(docker ps -qa) 
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:develop
-            sudo docker compose up -d //현재 디렉토리의 Docker Compse 파일을 사용하여 컨테이너 시작 
-            sudo docker image prune -f //사용하지 않는 Docker 이미지 삭제 (강제)
+            sudo docker compose up -d 
+            sudo docker image prune -f 
