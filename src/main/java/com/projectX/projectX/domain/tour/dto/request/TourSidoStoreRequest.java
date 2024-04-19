@@ -6,6 +6,5 @@ public record TourSidoStoreRequest(String sidoName, Integer sidoCode) {
 
     @Builder
     public TourSidoStoreRequest {
-
     }
 }
