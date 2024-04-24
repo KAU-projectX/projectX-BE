@@ -11,6 +11,7 @@ public class MemberMapper {
 
     public static Member toMember(MemberSignUpRequest memberSignUpRequest) {
         return Member.builder()
+            .userId(memberSignUpRequest.userId())
             .userPassword(memberSignUpRequest.userPassword())
             .userNickName(memberSignUpRequest.userNickName())
             .build();
@@ -18,6 +19,7 @@ public class MemberMapper {
 
     public static MemberSignUpResponse toMemberSignUpResponse(Member member) {
         return MemberSignUpResponse.builder()
+            .userId(member.getUserId())
             .userPassword(member.getUserPassword())
             .userNickName(member.getUserNickName())
             .build();
