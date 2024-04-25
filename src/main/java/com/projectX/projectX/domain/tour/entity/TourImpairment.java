@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,17 +24,9 @@ public class TourImpairment extends BaseEntity {
     @Comment("투어 편의시설 식별자")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigungu_id", nullable = false)
-    private Sigungu sigungu;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sido_id", nullable = false)
-    private Sido sido;
 
     @Comment("휠체어")
     private Integer wheelChair;
@@ -55,13 +47,11 @@ public class TourImpairment extends BaseEntity {
     private Integer lactationroom;
 
     @Builder
-    public TourImpairment(Long id, Tour tour, Sigungu sigungu, Sido sido, Integer wheelChair,
+    public TourImpairment(Long id, Tour tour, Integer wheelChair,
         Integer braileBlock, Integer audioGuide, Integer videGuide, Integer stroller,
         Integer lactationroom) {
         this.id = id;
         this.tour = tour;
-        this.sigungu = sigungu;
-        this.sido = sido;
         this.wheelChair = wheelChair;
         this.braileBlock = braileBlock;
         this.audioGuide = audioGuide;
