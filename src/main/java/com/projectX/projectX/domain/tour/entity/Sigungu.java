@@ -31,14 +31,14 @@ public class Sigungu extends BaseEntity {
 
     @Column(nullable = false)
     @Comment("시군구 코드")
-    private long sigunguCode;
+    private Integer sigunguCode;
 
     @Column(nullable = false)
     @Comment("시군구 이름")
-    private long sigunguName;
+    private String sigunguName;
 
     @Builder
-    public Sigungu(Long id, Sido sido, long sigunguCode, long sigunguName) {
+    public Sigungu(Long id, Sido sido, Integer sigunguCode, String sigunguName) {
         this.id = id;
         this.sido = sido;
         this.sigunguCode = sigunguCode;

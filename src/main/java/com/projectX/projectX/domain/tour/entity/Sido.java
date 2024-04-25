@@ -22,18 +22,18 @@ public class Sido extends BaseEntity {
     @Comment("시도 식별자")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Comment("시도 코드")
-    private long sidoCode;
+    private Integer sidoCode;
 
 
     @Column(nullable = false)
     @Comment("시도 이름")
-    private long sidoName;
+    private String sidoName;
 
 
     @Builder
-    public Sido(Long id, long sidoCode, long sidoName) {
+    public Sido(Long id, Integer sidoCode, String sidoName) {
         this.id = id;
         this.sidoCode = sidoCode;
         this.sidoName = sidoName;
