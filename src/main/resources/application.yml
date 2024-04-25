@@ -2,14 +2,11 @@ spring:
   config:
     import: optional:file:.env[.properties]
   profiles:
-    default: local
+    default: prod
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       format_sql: true
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-service_key: ${MY_SECRET_KEY}
-base_url: ${BASE_URL}
