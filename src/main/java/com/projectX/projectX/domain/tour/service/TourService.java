@@ -29,10 +29,10 @@ public class TourService {
     private final SidoRepository sidoRepository;
     private final SigunguRepository sigunguRepository;
 
-    @Value("${tour-api.service_key}")
+    @Value("${tour-api.service-key}")
     private String service_key;
 
-    @Value("${tour-api.base_url}")
+    @Value("${tour-api.base-url}")
     private String base_url;
     public String createSido(){
         StringBuffer result = new StringBuffer();
