@@ -28,14 +28,6 @@ public class TourImage extends BaseEntity {
     @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigungu_id", nullable = false)
-    private Sigungu sigungu;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sido_id", nullable = false)
-    private Sido sido;
-
     @Comment("이미지 url")
     private String imageUrl;
 
@@ -43,12 +35,9 @@ public class TourImage extends BaseEntity {
     private String thumbnailImageUrl;
 
     @Builder
-    public TourImage(Long id, Tour tour, Sigungu sigungu, Sido sido, String imageUrl,
-        String thumbnailImageUrl) {
+    public TourImage(Long id, Tour tour, String imageUrl, String thumbnailImageUrl) {
         this.id = id;
         this.tour = tour;
-        this.sigungu = sigungu;
-        this.sido = sido;
         this.imageUrl = imageUrl;
         this.thumbnailImageUrl = thumbnailImageUrl;
     }
