@@ -2,7 +2,6 @@ package com.projectX.projectX.domain.tour.service;
 
 import static com.projectX.projectX.domain.tour.util.TourMapper.toSido;
 import static com.projectX.projectX.domain.tour.util.TourMapper.toSigungu;
-import static com.projectX.projectX.domain.tour.util.TourMapper.toTourImpairment;
 
 import com.projectX.projectX.domain.tour.dto.request.TourSidoStoreRequest;
 import com.projectX.projectX.domain.tour.dto.request.TourSigunguStoreRequest;
@@ -46,39 +45,6 @@ public class TourService {
     private String service_key;
     @Value("${tour-api.base-url}")
     private String base_url;
-
-    private static HashMap<String, Integer> convertToPossibleMap(
-        Map<String, String> barrierFreeMap) {
-        HashMap<String, Integer> barrierFreePossibleMap = new HashMap<>();
-        for (String key : barrierFreeMap.keySet()) {
-            if (isContainPossibleKeyword(barrierFreeMap.get(key))) {
-                barrierFreePossibleMap.put(key, 1);
-            }
-        }
-        return barrierFreePossibleMap;
-    }
-
-    private static boolean isContainPossibleKeyword(String value) {
-        if (value.contains("가능") || value.contains("허용") || value.contains("있음") || value.contains(
-            "존재")) {
-            return true;
-        }
-        return false;
-    }
-
-    private static JSONObject getJSONObject(JSONObject obj, String key) throws ClassCastException {
-        if (obj != null) {
-            return (JSONObject) obj.get(key);
-        }
-        return null;
-    }
-
-    private static boolean isContainKey(JSONObject obj, String key) {
-        if (obj != null & obj.containsKey(key)) {
-            return true;
-        }
-        return false;
-    }
 
     public String createSido() {
         StringBuffer result = new StringBuffer();
@@ -248,19 +214,20 @@ public class TourService {
             JSONObject parsedItems = getJSONObject(parsedBody, "items");
             JSONObject parsedItem = getJSONObject(parsedItems, "item");
 
-            String[] OpenAPIkeys = {"wheelchair", "braileblock", "audioguide", "videoguide",
+            String[] OpenAPIKeys = {"wheelchair", "braileblock", "audioguide", "videoguide",
                 "videoguide", "stroller", "lactationroom"};
             String[] barrierFreekeys = {"wheelChair", "brailleBlock", "audioGuide", "videoGuide",
                 "stroller", "lactationRoom"};
             HashMap<String, String> barrierFreeMap = new HashMap<>();
-            for (int i = 0; i < OpenAPIkeys.length; i++) {
-                if (isContainKey(parsedItem, OpenAPIkeys[i])) {
-                    barrierFreeMap.put(barrierFreekeys[i], OpenAPIkeys[i]);
+            for (int i = 0; i < OpenAPIKeys.length; i++) {
+                if (isContainKey(parsedItem, OpenAPIKeys[i])) {
+                    barrierFreeMap.put(barrierFreekeys[i], OpenAPIKeys[i]);
                 }
             }
             Tour tour = tourRepository.findByContentId(contentId).get();
 
-            impairmentRepository.save(toTourImpairment(tour, convertToPossibleMap(barrierFreeMap)));
+            impairmentRepository.save(
+                tourMapper.toTourImpairment(tour, convertToPossibleMap(barrierFreeMap)));
 
         } catch (MalformedURLException e) {
             throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
@@ -269,5 +236,36 @@ public class TourService {
         }
     }
 
+    private static HashMap<String, Integer> convertToPossibleMap(
+        Map<String, String> barrierFreeMap) {
+        HashMap<String, Integer> barrierFreePossibleMap = new HashMap<>();
+        for (String key : barrierFreeMap.keySet()) {
+            if (isContainPossibleKeyword(barrierFreeMap.get(key))) {
+                barrierFreePossibleMap.put(key, 1);
+            }
+        }
+        return barrierFreePossibleMap;
+    }
 
+    private static boolean isContainPossibleKeyword(String value) {
+        if (value.contains("가능") || value.contains("허용") || value.contains("있음") || value.contains(
+            "존재")) {
+            return true;
+        }
+        return false;
+    }
+
+    private static JSONObject getJSONObject(JSONObject obj, String key) throws ClassCastException {
+        if (obj != null) {
+            return (JSONObject) obj.get(key);
+        }
+        return null;
+    }
+
+    private static boolean isContainKey(JSONObject obj, String key) {
+        if (obj != null & obj.containsKey(key)) {
+            return true;
+        }
+        return false;
+    }
 }
