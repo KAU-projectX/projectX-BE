@@ -1,18 +1,24 @@
 package com.projectX.projectX.domain.tour.service;
 
+import static com.projectX.projectX.domain.tour.util.TourMapper.toTourImage;
+
 import com.projectX.projectX.domain.tour.dto.request.TourSidoStoreRequest;
 import com.projectX.projectX.domain.tour.dto.request.TourSigunguStoreRequest;
 import com.projectX.projectX.domain.tour.entity.Sido;
 import com.projectX.projectX.domain.tour.entity.Sigungu;
+import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.tour.exception.InvalidAreaCodeException;
 import com.projectX.projectX.domain.tour.repository.SidoRepository;
 import com.projectX.projectX.domain.tour.repository.SigunguRepository;
+import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.util.TourMapper;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -28,6 +34,10 @@ public class TourService {
 
     private final SidoRepository sidoRepository;
     private final SigunguRepository sigunguRepository;
+    //private final ImpairmentRepository impairmentRepository;
+    private final TourImageRepository tourImageRepository;
+    private final TourMapper tourMapper;
+    private final String postfix = "MobileOS=ETC&MobileApp=Infoforyou";
 
     @Value("${tour-api.service-key}")
     private String service_key;
@@ -115,6 +125,68 @@ public class TourService {
             throw new IllegalArgumentException(e);
         }
         return "성공적으로 저장하였습니다.";
+    }
+
+    public void createTourImage(){
+        StringBuilder sb = new StringBuilder();
+        String uri =
+            base_url + "/detailImage1?serviceKey=" + service_key + "&contentId=" + contentId
+                + postfix +"&imageYN=Y&subImageYN=Y";
+
+        try {
+            URL requestUrl = new URL(uri);
+            HttpURLConnection urlConnection = (HttpURLConnection) requestUrl.openConnection();
+
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            urlConnection.setRequestProperty("Content-type", "application/json");
+
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+            String connectionResult = br.readLine();
+            while (connectionResult != null) {
+                sb.append(connectionResult + "\n");
+            }
+
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
+            JSONObject parsedResponse = getJSONObject(jsonObject, "response");
+            JSONObject parsedBody = getJSONObject(parsedResponse, "body");
+            JSONObject parsedItems = getJSONObject(parsedBody, "items");
+            JSONObject parsedItem = getJSONObject(parsedItems, "item");
+
+            String[] OpenAPIKeys = {"originimgurl", "smallimageurl"};
+            String[] TourImageKeys = {"imageUrl", "thumbnailImageUrl"};
+            HashMap<String, String> TourImageMap = new HashMap<>();
+            for (int i = 0; i < OpenAPIKeys.length; i++) {
+                if (isContainKey(parsedItem, OpenAPIKeys[i])) {
+                    TourImageMap.put(TourImageKeys[i], parsedItem.get(OpenAPIKeys[i]).toString());
+                }
+            }
+            Tour tour = tourRepository.findByContentId(contentId).get();
+
+            tourImageRepository.save(toTourImage(tour, TourImageMap));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private static JSONObject getJSONObject(JSONObject obj, String key) throws ClassCastException {
+        if (obj != null) {
+            return (JSONObject) obj.get(key);
+        }
+        return null;
+    }
+
+    private static boolean isContainKey(JSONObject obj, String key) {
+        if (obj != null & obj.containsKey(key)) {
+            return true;
+        }
+        return false;
     }
 
 

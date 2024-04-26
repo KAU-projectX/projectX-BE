@@ -40,4 +40,13 @@ public class TourRestController {
         return ResponseDTO.res(tourService.createSigungu(areaCode));
     }
 
+    @GetMapping("/create/tourImage")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "이미지 생성 API", description =  "tour api를 통해 이미지를 디비에 저장하는 api 입니다.")
+    public ResponseDTO<Void> createTourImage() {
+        tourService.createTourImage();
+        return ResponseDTO.res("투어 이미지를 성공적으로 저장했습니다.");
+    }
+
+
 }
