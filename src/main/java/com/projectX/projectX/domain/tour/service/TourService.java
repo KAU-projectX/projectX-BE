@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,8 @@ public class TourService {
     private final SigunguRepository sigunguRepository;
     private final ImpairmentRepository impairmentRepository;
     private final TourRepository tourRepository;
-    private final TourMapper tourMapper;
-    private final String postfix = "MobileOS=ETC&MobileApp=Infoforyou";
 
+    private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
     @Value("${tour-api.service-key}")
     private String service_key;
@@ -61,6 +61,8 @@ public class TourService {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setRequestProperty("Content-type", "application/json");
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
 
             BufferedReader bf = new BufferedReader(
                 new InputStreamReader(url.openStream(), "UTF-8"));
@@ -84,7 +86,7 @@ public class TourService {
                 TourSidoStoreRequest sidoStoreRequest = new TourSidoStoreRequest(sidoName,
                     sidoCode);
                 if (sidoRepository.findBySidoCode(sidoCode) == null) {
-                    sidoRepository.save(tourMapper.toSido(sidoStoreRequest));
+                    sidoRepository.save(TourMapper.toSido(sidoStoreRequest));
                 }
             }
         } catch (Exception e) {
@@ -133,7 +135,7 @@ public class TourService {
                 TourSigunguStoreRequest sigunguStoreRequest = new TourSigunguStoreRequest(
                     sigunguName, sigunguCode, sido);
                 if (sigunguRepository.findBySigunguCodeAndSido(sigunguCode, sido) == null) {
-                    sigunguRepository.save(tourMapper.toSigungu(sigunguStoreRequest));
+                    sigunguRepository.save(TourMapper.toSigungu(sigunguStoreRequest));
                 }
             }
         } catch (Exception e) {
@@ -145,7 +147,7 @@ public class TourService {
     public String createTour(Integer areaCode, Integer sigunguCode) {
         StringBuffer result = new StringBuffer();
         String uri = base_url + "areaBasedList1?" +
-            "pageNo=1&numOfRows=7908&_type=json&MobileOS=ETC&MobileApp=AppTest&" +
+            "pageNo=1&numOfRows=100&_type=json&MobileOS=ETC&MobileApp=AppTest&" +
             "serviceKey=" + service_key;
         if (areaCode != 0) {
             uri += "&areaCode=" + areaCode;
@@ -218,9 +220,8 @@ public class TourService {
                 TourStoreRequest tourStoreRequest = new TourStoreRequest(address, specAddress, sido,
                     sigungu, contentId, contentTypeId, zipCode, imageUrl, thumbnailImageUrl, mapX,
                     mapY, title, phone);
-                if (tourRepository.findByContentId(contentId) == null) {
-                    tourRepository.save(tourMapper.toTour(tourStoreRequest));
-                }
+                tourRepository.save(TourMapper.toTour(tourStoreRequest));
+
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
@@ -228,58 +229,27 @@ public class TourService {
         return "성공적으로 저장하였습니다.";
     }
 
-    public ArrayList<Long> loadAllContentId() {
-        StringBuilder sb = new StringBuilder();
-        ArrayList<Long> contentIdList = new ArrayList<>();
-        String uri = base_url + "areaBasedList1?serviceKey=" + service_key + postfix;
-        try {
-            URL requestUrl = new URL(uri);
-            HttpURLConnection urlConnection = (HttpURLConnection) requestUrl.openConnection();
-
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-            urlConnection.setRequestProperty("Content-type", "application/json");
-
-            BufferedReader br = new BufferedReader(
-                new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
-            String connectionResult = br.readLine();
-            while (connectionResult != null) {
-                sb.append(connectionResult + "\n");
-            }
-
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
-            JSONObject parsedResponse = (JSONObject) jsonObject.get("response");
-            JSONObject parsedBody = (JSONObject) parsedResponse.get("body");
-            JSONArray parsedItem = (JSONArray) parsedBody.get("item");
-
-            for (Object item : parsedItem) {
-                JSONObject obj = (JSONObject) item;
-                contentIdList.add((Long) obj.get("contentid"));
-            }
-            return contentIdList;
-
-        } catch (MalformedURLException e) {
-            throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
-        } catch (Exception e) {
-            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
-        }
-    }
-
     public void rotateForEveryContentId() {
-        ArrayList<Long> contentIdList = loadAllContentId();
+        List<Tour> entireTourList = tourRepository.findAll();
+        List<Long> contentIdList = new ArrayList<>();
+        for (Tour tour : entireTourList) {
+            contentIdList.add(tour.getContentId());
+        }
         for (Long contentId : contentIdList) {
-            createBarrierFree(contentId);
+            Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
+                () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
+            );
+            if (!impairmentRepository.findByTourId(tour.getId()).isPresent()) {
+                createBarrierFree(contentId);
+            }
         }
     }
 
     public void createBarrierFree(Long contentId) {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         String uri =
-            base_url + "/detailWithTour1?serviceKey=" + service_key + "&contentId=" + contentId
-                + postfix;
+            base_url + "detailWithTour1?serviceKey=" + service_key + "&contentId=" + contentId
+                + "&pageNo=1" + postfix;
 
         try {
             URL requestUrl = new URL(uri);
@@ -291,28 +261,25 @@ public class TourService {
             urlConnection.setRequestProperty("Content-type", "application/json");
 
             BufferedReader br = new BufferedReader(
-                new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
-            String connectionResult = br.readLine();
-            while (connectionResult != null) {
-                sb.append(connectionResult + "\n");
-            }
+                new InputStreamReader(requestUrl.openStream(), "UTF-8"));
+            result.append(br.readLine());
 
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
             JSONObject parsedResponse = getJSONObject(jsonObject, "response");
             JSONObject parsedBody = getJSONObject(parsedResponse, "body");
             JSONObject parsedItems = getJSONObject(parsedBody, "items");
-            JSONObject parsedItem = getJSONObject(parsedItems, "item");
+            JSONArray parsedItemArray = (JSONArray) parsedItems.get("item");
+            JSONObject finalItem = (JSONObject) parsedItemArray.get(0);
 
             String[] OpenAPIKeys = {"wheelchair", "braileblock", "audioguide", "videoguide",
-                "videoguide", "stroller", "lactationroom"};
+                "stroller", "lactationroom"};
             String[] barrierFreekeys = {"wheelChair", "brailleBlock", "audioGuide", "videoGuide",
                 "stroller", "lactationRoom"};
             HashMap<String, String> barrierFreeMap = new HashMap<>();
             for (int i = 0; i < OpenAPIKeys.length; i++) {
-                if (isContainKey(parsedItem, OpenAPIKeys[i])) {
-                    barrierFreeMap.put(barrierFreekeys[i], (String) parsedItem.get(OpenAPIKeys[i]));
+                if (isContainKey(finalItem, OpenAPIKeys[i])) {
+                    barrierFreeMap.put(barrierFreekeys[i], (String) finalItem.get(OpenAPIKeys[i]));
                 }
             }
             Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
@@ -320,7 +287,7 @@ public class TourService {
             );
 
             impairmentRepository.save(
-                tourMapper.toTourImpairment(tour, convertToPossibleMap(barrierFreeMap)));
+                TourMapper.toTourImpairment(tour, convertToPossibleMap(barrierFreeMap)));
 
         } catch (MalformedURLException e) {
             throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
@@ -335,6 +302,8 @@ public class TourService {
         for (String key : barrierFreeMap.keySet()) {
             if (isContainPossibleKeyword(barrierFreeMap.get(key))) {
                 barrierFreePossibleMap.put(key, 1);
+            } else {
+                barrierFreePossibleMap.put(key, 0);
             }
         }
         return barrierFreePossibleMap;
