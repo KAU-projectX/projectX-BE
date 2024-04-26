@@ -72,11 +72,11 @@ public class Tour extends BaseEntity {
     @Comment("GPS Y좌표")
     private float mapY;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 100, nullable = false)
     @Comment("콘텐츠 제목")
     private String title;
 
-    @Column(length = 13, nullable = false)
+    @Column(length = 30, nullable = false)
     @Comment("전화번호")
     private String phone;
 
