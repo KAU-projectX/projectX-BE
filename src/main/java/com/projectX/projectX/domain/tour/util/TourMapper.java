@@ -6,7 +6,9 @@ import com.projectX.projectX.domain.tour.dto.request.TourStoreRequest;
 import com.projectX.projectX.domain.tour.entity.Sido;
 import com.projectX.projectX.domain.tour.entity.Sigungu;
 import com.projectX.projectX.domain.tour.entity.Tour;
+import com.projectX.projectX.domain.tour.entity.TourImpairment;
 import com.projectX.projectX.global.common.ContentType;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -47,4 +49,16 @@ public class TourMapper {
             .build();
     }
 
+    public static TourImpairment toTourImpairment(Tour tour,
+        Map<String, Integer> barrierFreePossibleMap) {
+        return TourImpairment.builder()
+            .tour(tour)
+            .wheelChair(barrierFreePossibleMap.get("wheelChair"))
+            .brailleBlock(barrierFreePossibleMap.get("brailleBlock"))
+            .audioGuide(barrierFreePossibleMap.get("audioGuide"))
+            .videoGuide(barrierFreePossibleMap.get("videoGuide"))
+            .stroller(barrierFreePossibleMap.get("stroller"))
+            .lactationRoom(barrierFreePossibleMap.get("lactationRoom"))
+            .build();
+    }
 }

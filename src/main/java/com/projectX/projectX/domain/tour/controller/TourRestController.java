@@ -5,9 +5,11 @@ import com.projectX.projectX.global.common.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "tour api", description = "tour api 관련 API")
@@ -35,6 +37,14 @@ public class TourRestController {
     public ResponseDTO<String> createTour(@RequestParam Integer sido,
         @RequestParam Integer sigungu) {
         return ResponseDTO.res(tourService.createTour(sido, sigungu));
+
     }
 
+    @GetMapping("/create/barrierFree")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "무장애 여행정보 생성 API", description = "tour api를 통해 무장애 여행정보를 디비에 저장하는 api 입니다.")
+    public ResponseDTO<Void> createBarrierFree() {
+        tourService.rotateForEveryContentId();
+        return ResponseDTO.res("무장애 여행정보를 성공적으로 저장했습니다.");
+    }
 }

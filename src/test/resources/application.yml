@@ -46,3 +46,7 @@ jwt:
     expire-length: 600000 #1000L * 60L * 10L
   refresh-token:
     expire-length: 7776000000 #1000L * 60L * 60L * 24L * 30L * 3L
+
+tour-api:
+  service-key: ${TOUR_API_SERVICE_KEY}
+  base-url: http://apis.data.go.kr/B551011/KorWithService1/
