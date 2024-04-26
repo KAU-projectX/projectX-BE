@@ -3,7 +3,6 @@ spring:
     import: optional:file:.env[.properties]
   profiles:
     default: prod
-
   jpa:
     hibernate:
       ddl-auto: create

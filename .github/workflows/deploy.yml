@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: '17'
           distribution: "adopt"
-          
+
       - name: Build Number
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
@@ -46,16 +46,18 @@ jobs:
           -Djib.to.auth.username=${{ secrets.DOCKERHUB_USERNAME }} \
           -Djib.to.auth.password=${{ secrets.DOCKERHUB_PASSWORD }} \
           -Djib.to.image="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:${GITHUB_REF##*/}"
-          
-      - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v22
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        id: deploy
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ secrets.AWS_REGION }}
-          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
-          application_name: ${{ secrets.EB_APPLICATION_NAME }}
-          deployment_package: ${{ secrets.EB_DEPLOYMENT_PACKAGE }}
-          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
-          version_description: Version ${{steps.build-number.outputs.BUILD_NUMBER}} deployed via github actions ${{ github.sha }}
-          wait_for_deployment: 180
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          port : 22
+          envs: GITHUB_SHA
+          script: |
+            sudo docker rm -f $(docker ps -qa) 
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:develop
+            docker run -d --name projectX -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPO }}:develop
+            sudo docker image prune -f
