@@ -45,4 +45,4 @@ jwt:
 
 tour-api:
   service-key:  ${TOUR_API_SERVICE_KEY}
-  base-url: http://apis.data.go.kr/B551011/KorWithService1
+  base-url: http://apis.data.go.kr/B551011/KorWithService1/
