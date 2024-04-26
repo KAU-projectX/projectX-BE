@@ -48,5 +48,5 @@ jwt:
     expire-length: 7776000000 #1000L * 60L * 60L * 24L * 30L * 3L
 
 tour-api:
-  service-key:  l2BRIJb90dqqY%2F9dQGV4T90EhnTyN2HW42mXIjk7AHfkDrbQs1j%2FghiPCtd%2BjFF0vmcqVJXODTs42qd4RUoqjQ%3D%3D
+  service-key: ${TOUR_API_SERVICE_KEY}
   base-url: http://apis.data.go.kr/B551011/KorWithService1/
