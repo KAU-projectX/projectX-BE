@@ -32,31 +32,31 @@ public class TourImpairment extends BaseEntity {
     private Integer wheelChair;
 
     @Comment("점자블록")
-    private Integer braileBlock;
+    private Integer brailleBlock;
 
     @Comment("오디오 가이드")
     private Integer audioGuide;
 
     @Comment("비디오 가이드 및 자막")
-    private Integer videGuide;
+    private Integer videoGuide;
 
     @Comment("유모차")
     private Integer stroller;
 
     @Comment("수유실")
-    private Integer lactationroom;
+    private Integer lactationRoom;
 
     @Builder
-    public TourImpairment(Long id, Tour tour, Integer wheelChair,
-        Integer braileBlock, Integer audioGuide, Integer videGuide, Integer stroller,
-        Integer lactationroom) {
+    public TourImpairment(Long id, Tour tour, Integer wheelChair, Integer brailleBlock,
+        Integer audioGuide, Integer videoGuide, Integer stroller, Integer lactationRoom) {
         this.id = id;
         this.tour = tour;
         this.wheelChair = wheelChair;
-        this.braileBlock = braileBlock;
+        this.brailleBlock = brailleBlock;
         this.audioGuide = audioGuide;
-        this.videGuide = videGuide;
+        this.videoGuide = videoGuide;
         this.stroller = stroller;
-        this.lactationroom = lactationroom;
+        this.lactationRoom = lactationRoom;
     }
+
 }
