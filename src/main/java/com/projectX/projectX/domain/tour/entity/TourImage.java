@@ -31,14 +31,10 @@ public class TourImage extends BaseEntity {
     @Comment("이미지 url")
     private String imageUrl;
 
-    @Comment("썸네일 이미지 url")
-    private String thumbnailImageUrl;
-
     @Builder
-    public TourImage(Long id, Tour tour, String imageUrl, String thumbnailImageUrl) {
+    public TourImage(Long id, Tour tour, String imageUrl) {
         this.id = id;
         this.tour = tour;
         this.imageUrl = imageUrl;
-        this.thumbnailImageUrl = thumbnailImageUrl;
     }
 }
