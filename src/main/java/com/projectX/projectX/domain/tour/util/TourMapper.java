@@ -6,8 +6,11 @@ import com.projectX.projectX.domain.tour.dto.request.TourStoreRequest;
 import com.projectX.projectX.domain.tour.entity.Sido;
 import com.projectX.projectX.domain.tour.entity.Sigungu;
 import com.projectX.projectX.domain.tour.entity.Tour;
+import com.projectX.projectX.domain.tour.entity.TourImage;
 import com.projectX.projectX.domain.tour.entity.TourImpairment;
 import com.projectX.projectX.global.common.ContentType;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -59,6 +62,13 @@ public class TourMapper {
             .videoGuide(barrierFreePossibleMap.get("videoGuide"))
             .stroller(barrierFreePossibleMap.get("stroller"))
             .lactationRoom(barrierFreePossibleMap.get("lactationRoom"))
+            .build();
+    }
+
+    public static TourImage toTourImage(Tour tour, String tourImage){
+        return TourImage.builder()
+            .tour(tour)
+            .imageUrl(tourImage)
             .build();
     }
 }

@@ -44,7 +44,15 @@ public class TourRestController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "무장애 여행정보 생성 API", description = "tour api를 통해 무장애 여행정보를 디비에 저장하는 api 입니다.")
     public ResponseDTO<Void> createBarrierFree() {
-        tourService.rotateForEveryContentId();
+        tourService.rotateForImpairment();
         return ResponseDTO.res("무장애 여행정보를 성공적으로 저장했습니다.");
+    }
+
+    @GetMapping("/create/tourImage")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "투어 이미지 생성 API", description =  "tour api를 통해 투어 이미지를 디비에 저장하는 api 입니다.")
+    public ResponseDTO<Void> createTourImage() {
+        tourService.rotateForTourImage();
+        return ResponseDTO.res("투어 이미지를 성공적으로 저장했습니다.");
     }
 }

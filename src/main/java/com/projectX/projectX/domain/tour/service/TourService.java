@@ -14,10 +14,12 @@ import com.projectX.projectX.domain.tour.exception.InvalidURIException;
 import com.projectX.projectX.domain.tour.repository.ImpairmentRepository;
 import com.projectX.projectX.domain.tour.repository.SidoRepository;
 import com.projectX.projectX.domain.tour.repository.SigunguRepository;
+import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
 import com.projectX.projectX.domain.tour.util.TourMapper;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -43,13 +45,18 @@ public class TourService {
     private final SigunguRepository sigunguRepository;
     private final ImpairmentRepository impairmentRepository;
     private final TourRepository tourRepository;
+    private final TourImageRepository tourImageRepository;
 
-    private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
+    private static JSONParser jsonParser;
+    private static StringBuffer result;
+    private static URL requestUrl;
 
     @Value("${tour-api.service-key}")
     private String service_key;
     @Value("${tour-api.base-url}")
     private String base_url;
+
+    private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
     public String createSido() {
         StringBuffer result = new StringBuffer();
@@ -229,12 +236,17 @@ public class TourService {
         return "성공적으로 저장하였습니다.";
     }
 
-    public void rotateForEveryContentId() {
+    private List<Long> createContentIdList() {
         List<Tour> entireTourList = tourRepository.findAll();
         List<Long> contentIdList = new ArrayList<>();
         for (Tour tour : entireTourList) {
             contentIdList.add(tour.getContentId());
         }
+        return contentIdList;
+    }
+
+    public void rotateForImpairment(){
+        List<Long> contentIdList = createContentIdList();
         for (Long contentId : contentIdList) {
             Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
                 () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
@@ -317,6 +329,55 @@ public class TourService {
         return false;
     }
 
+    public void rotateForTourImage(){
+        List<Long> contentIdList = createContentIdList();
+        for (Long contentId : contentIdList) {
+            Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
+                () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
+            );
+            if (!tourImageRepository.findByTourId(tour.getId()).isPresent()) {
+                createTourImage(contentId);
+            }
+        }
+    }
+
+    private void createTourImage(Long contentId){
+        result = new StringBuffer();
+        String uri =
+            base_url + "detailImage1?serviceKey=" + service_key + "&contentId=" + contentId
+                + postfix +"&imageYN=Y&subImageYN=Y";
+
+        try {
+            initConnection(uri);
+            jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
+            JSONObject parsedResponse = getJSONObject(jsonObject, "response");
+            JSONObject parsedBody = getJSONObject(parsedResponse, "body");
+            JSONObject parsedItems = getJSONObject(parsedBody, "items");
+            JSONArray parsedItemArray = (JSONArray) parsedItems.get("item");
+
+            String OpenAPIKeys = "originimgurl";
+            List<String> TourImageList = new ArrayList<>();
+
+            for(int i = 0; i<parsedItemArray.size(); i++){
+                JSONObject parsedItem = (JSONObject) parsedItemArray.get(i);
+                if(isContainKey(parsedItem, OpenAPIKeys)){
+                    TourImageList.add(parsedItem.get(OpenAPIKeys).toString());
+                }
+            }
+
+            Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
+                () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
+            );
+
+            for(String tourImage : TourImageList){
+                tourImageRepository.save(TourMapper.toTourImage(tour, tourImage));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static JSONObject getJSONObject(JSONObject obj, String key) throws ClassCastException {
         if (obj != null) {
             return (JSONObject) obj.get(key);
@@ -329,5 +390,19 @@ public class TourService {
             return true;
         }
         return false;
+    }
+
+    private static void initConnection(String uri) throws IOException {
+        requestUrl = new URL(uri);
+        HttpURLConnection urlConnection = (HttpURLConnection) requestUrl.openConnection();
+
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setConnectTimeout(5000);
+        urlConnection.setReadTimeout(5000);
+        urlConnection.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader br = new BufferedReader(
+            new InputStreamReader(requestUrl.openStream(), "UTF-8"));
+        result.append(br.readLine());
     }
 }
