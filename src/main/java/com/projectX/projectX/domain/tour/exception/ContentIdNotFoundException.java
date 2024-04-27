@@ -3,9 +3,9 @@ package com.projectX.projectX.domain.tour.exception;
 import com.projectX.projectX.global.exception.ApplicationException;
 import com.projectX.projectX.global.exception.ErrorCode;
 
-public class InvalidAreaCodeException extends ApplicationException {
+public class ContentIdNotFoundException extends ApplicationException {
 
-    public InvalidAreaCodeException(ErrorCode errorCode) {
+    public ContentIdNotFoundException(ErrorCode errorCode) {
         super(errorCode);
     }
 }
