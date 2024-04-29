@@ -90,7 +90,7 @@ public class Tour extends BaseEntity {
         Long zipCode,
         Long contentId, ContentType contentType, String imageUrl, String thumbnailImageUrl,
         float mapX,
-        float mapY, String title, String phone) {
+        float mapY, String title, String phone, String homepageUrl, String overview) {
         this.id = id;
         this.sigungu = sigungu;
         this.sido = sido;
@@ -105,5 +105,7 @@ public class Tour extends BaseEntity {
         this.mapY = mapY;
         this.title = title;
         this.phone = phone;
+        this.homepageUrl = homepageUrl;
+        this.overview = overview;
     }
 }
