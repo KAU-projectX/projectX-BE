@@ -29,22 +29,21 @@ public class Tour extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigungu_id", nullable = false)
+    @JoinColumn(name = "sigungu_id")
     private Sigungu sigungu;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sido_id", nullable = false)
+    @JoinColumn(name = "sido_id")
     private Sido sido;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     @Comment("주소")
     private String address;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     @Comment("상세주소")
     private String spec_address;
 
-    @Column(nullable = false)
     @Comment("우편번호")
     private Long zipCode;
 
@@ -76,16 +75,23 @@ public class Tour extends BaseEntity {
     @Comment("콘텐츠 제목")
     private String title;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 30)
     @Comment("전화번호")
     private String phone;
+
+    @Comment("홈페이지 URL")
+    private String homepageUrl;
+
+    @Comment("관광지 설명")
+    @Column(columnDefinition = "TEXT")
+    private String overview;
 
     @Builder
     public Tour(Long id, Sigungu sigungu, Sido sido, String address, String spec_address,
         Long zipCode,
         Long contentId, ContentType contentType, String imageUrl, String thumbnailImageUrl,
         float mapX,
-        float mapY, String title, String phone) {
+        float mapY, String title, String phone, String homepageUrl, String overview) {
         this.id = id;
         this.sigungu = sigungu;
         this.sido = sido;
@@ -100,5 +106,12 @@ public class Tour extends BaseEntity {
         this.mapY = mapY;
         this.title = title;
         this.phone = phone;
+        this.homepageUrl = homepageUrl;
+        this.overview = overview;
+    }
+
+    public void updateHomePageAndOverview(String homepage, String overview) {
+        this.homepageUrl = homepage;
+        this.overview = overview;
     }
 }

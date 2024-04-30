@@ -55,4 +55,13 @@ public class TourRestController {
         tourService.rotateForTourImage();
         return ResponseDTO.res("투어 이미지를 성공적으로 저장했습니다.");
     }
+
+    @GetMapping("/create/detailCommon")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "관광지 상세정보 생성 API", description = "tour api를 통해 관광지 상세정보를 디비에 저장하는 api 입니다.")
+    public ResponseDTO<Void> createDetailCommon() {
+        tourService.rotateForEveryContentIdDetail();
+        return ResponseDTO.res("관광지 상세 정보를 성공적으로 저장했습니다.");
+    }
+
 }
