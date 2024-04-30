@@ -378,6 +378,81 @@ public class TourService {
         }
     }
 
+    public void rotateForEveryContentIdDetail() {
+        List<Tour> entireTourList = tourRepository.findAll();
+        List<Long> contentIdList = new ArrayList<>();
+        for (Tour tour : entireTourList) {
+            contentIdList.add(tour.getContentId());
+        }
+        for (Long contentId : contentIdList) {
+            createDetailCommon(contentId);
+        }
+    }
+
+    public void createDetailCommon(Long contentId) {
+        StringBuffer result = new StringBuffer();
+        String uri =
+            base_url + "detailCommon1?serviceKey=" + service_key + "&contentId=" + contentId
+                + postfix + "&defaultYN=Y&overviewYN=Y";
+
+        try {
+            URL requestUrl = new URL(uri);
+            HttpURLConnection urlConnection = (HttpURLConnection) requestUrl.openConnection();
+
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            urlConnection.setRequestProperty("Content-type", "application/json");
+
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(requestUrl.openStream(), "UTF-8"));
+            result.append(br.readLine());
+
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
+            JSONObject parsedResponse = getJSONObject(jsonObject, "response");
+            JSONObject parsedBody = getJSONObject(parsedResponse, "body");
+            JSONObject parsedItems = getJSONObject(parsedBody, "items");
+            JSONArray parsedItemArray = (JSONArray) parsedItems.get("item");
+            JSONObject finalItem = (JSONObject) parsedItemArray.get(0);
+
+            Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
+                () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
+            );
+            String[] OpenAPIKeys = {"homepage", "overview"};
+            String[] SpecInfoArr = new String[2];
+            for (int i = 0; i < OpenAPIKeys.length; i++) {
+                if (isContainKey(finalItem, OpenAPIKeys[i])) {
+                    String item = (String) finalItem.get(OpenAPIKeys[i]);
+                    if (i == 0) { // homepage는 url 발췌 필요
+                        if (!item.isBlank()) SpecInfoArr[i] = extractHref(item);
+                        else SpecInfoArr[i] = item;
+                    } else SpecInfoArr[i] = item;
+                }
+            }
+            tour.updateHomePageAndOverview(SpecInfoArr[0], SpecInfoArr[1]);
+            tourRepository.save(tour);
+
+        } catch (MalformedURLException e) {
+            throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
+        } catch (Exception e) {
+            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
+        }
+    }
+
+    public static String extractHref(String input) {
+        int hrefStartIndex = input.indexOf("href=\"");
+        if (hrefStartIndex != -1) {
+            int hrefEndIndex = input.indexOf("\"",
+                hrefStartIndex + 6); // "href=\"" 다음의 인덱스부터 href 속성값이 시작됨
+            if (hrefEndIndex != -1) {
+                return input.substring(hrefStartIndex + 6, hrefEndIndex);
+            }
+        }
+        return null; // href 속성을 찾을 수 없는 경우
+    }
+
+
     private static JSONObject getJSONObject(JSONObject obj, String key) throws ClassCastException {
         if (obj != null) {
             return (JSONObject) obj.get(key);
