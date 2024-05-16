@@ -10,10 +10,6 @@ public enum ContentType {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     // 정수를 ENUM으로 변환하는 메서드
     public static ContentType fromInt(int value) {
         for (ContentType e : ContentType.values()) {
