@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,24 +19,11 @@ public class TourRestController {
 
     private final TourService tourService;
 
-    @GetMapping("/create/sido")
-    @Operation(summary = "시도 생성 API", description = "tour api를 통해 시도를 디비에 저장하는 api입니다.")
-    public ResponseDTO<String> createSido() {
-        return ResponseDTO.res(tourService.createSido());
-    }
-
-    @GetMapping("/create/sigungu")
-    @Operation(summary = "시군구 생성 API", description = "tour api를 통해 시군구를 디비에 저장하는 api 입니다.")
-    public ResponseDTO<String> createSigungu(@RequestParam Integer areaCode) {
-        return ResponseDTO.res(tourService.createSigungu(areaCode));
-    }
-
     @GetMapping("/create/tour")
     @Operation(summary = "지역기반 정보 조회 API", description = "tour api를 통해 지역기반여행정보를 디비에 저장하는 api입니다.")
-    public ResponseDTO<String> createTour(@RequestParam Integer sido,
-        @RequestParam Integer sigungu) {
-        return ResponseDTO.res(tourService.createTour(sido, sigungu));
-
+    public ResponseDTO<String> createTour() {
+        tourService.createTour();
+        return ResponseDTO.res("관광지 정보를 성공적으로 저장하였습니다.");
     }
 
     @GetMapping("/create/barrierFree")
@@ -50,7 +36,7 @@ public class TourRestController {
 
     @GetMapping("/create/tourImage")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "투어 이미지 생성 API", description =  "tour api를 통해 투어 이미지를 디비에 저장하는 api 입니다.")
+    @Operation(summary = "투어 이미지 생성 API", description = "tour api를 통해 투어 이미지를 디비에 저장하는 api 입니다.")
     public ResponseDTO<Void> createTourImage() {
         tourService.rotateForTourImage();
         return ResponseDTO.res("투어 이미지를 성공적으로 저장했습니다.");
