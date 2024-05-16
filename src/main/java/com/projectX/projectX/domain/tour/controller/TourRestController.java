@@ -20,18 +20,6 @@ public class TourRestController {
 
     private final TourService tourService;
 
-    @GetMapping("/create/sido")
-    @Operation(summary = "시도 생성 API", description = "tour api를 통해 시도를 디비에 저장하는 api입니다.")
-    public ResponseDTO<String> createSido() {
-        return ResponseDTO.res(tourService.createSido());
-    }
-
-    @GetMapping("/create/sigungu")
-    @Operation(summary = "시군구 생성 API", description = "tour api를 통해 시군구를 디비에 저장하는 api 입니다.")
-    public ResponseDTO<String> createSigungu(@RequestParam Integer areaCode) {
-        return ResponseDTO.res(tourService.createSigungu(areaCode));
-    }
-
     @GetMapping("/create/tour")
     @Operation(summary = "지역기반 정보 조회 API", description = "tour api를 통해 지역기반여행정보를 디비에 저장하는 api입니다.")
     public ResponseDTO<String> createTour(@RequestParam Integer sido,

@@ -1,10 +1,6 @@
 package com.projectX.projectX.domain.tour.service;
 
-import com.projectX.projectX.domain.tour.dto.request.TourSidoStoreRequest;
-import com.projectX.projectX.domain.tour.dto.request.TourSigunguStoreRequest;
 import com.projectX.projectX.domain.tour.dto.request.TourStoreRequest;
-import com.projectX.projectX.domain.tour.entity.Sido;
-import com.projectX.projectX.domain.tour.entity.Sigungu;
 import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.tour.exception.ContentIdNotFoundException;
 import com.projectX.projectX.domain.tour.exception.InvalidAreaCodeException;
@@ -12,8 +8,6 @@ import com.projectX.projectX.domain.tour.exception.InvalidRequestException;
 import com.projectX.projectX.domain.tour.exception.InvalidSigunguCodeException;
 import com.projectX.projectX.domain.tour.exception.InvalidURIException;
 import com.projectX.projectX.domain.tour.repository.ImpairmentRepository;
-import com.projectX.projectX.domain.tour.repository.SidoRepository;
-import com.projectX.projectX.domain.tour.repository.SigunguRepository;
 import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
 import com.projectX.projectX.domain.tour.util.TourMapper;
@@ -40,9 +34,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TourService {
-
-    private final SidoRepository sidoRepository;
-    private final SigunguRepository sigunguRepository;
     private final ImpairmentRepository impairmentRepository;
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
@@ -58,99 +49,6 @@ public class TourService {
 
     private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
-    public String createSido() {
-        StringBuffer result = new StringBuffer();
-        String uri = base_url + "areaCode1?" +
-            "pageNo=1&numOfRows=50&_type=json&MobileOS=ETC&MobileApp=AppTest&" +
-            "serviceKey=" + service_key;
-        try {
-            URL url = new URL(uri);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-type", "application/json");
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-
-            BufferedReader bf = new BufferedReader(
-                new InputStreamReader(url.openStream(), "UTF-8"));
-            result.append(bf.readLine());
-
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
-            //log.info(jsonObject.toJSONString());
-            JSONObject jsonObject1 = (JSONObject) jsonObject.get("response");
-            //log.info(jsonObject1.toJSONString());
-            JSONObject jsonObject2 = (JSONObject) jsonObject1.get("body");
-            //log.info(jsonObject2.toJSONString());
-            JSONObject jsonObject3 = (JSONObject) jsonObject2.get("items");
-            //log.info(jsonObject3.toJSONString());
-            JSONArray jsonArray = (JSONArray) jsonObject3.get("item");
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                JSONObject object = (JSONObject) jsonArray.get(i);
-                String sidoName = (String) object.get("name");
-                String tmp = (String) object.get("code");
-                Integer sidoCode = Integer.parseInt(tmp);
-                TourSidoStoreRequest sidoStoreRequest = new TourSidoStoreRequest(sidoName,
-                    sidoCode);
-                if (sidoRepository.findBySidoCode(sidoCode) == null) {
-                    sidoRepository.save(TourMapper.toSido(sidoStoreRequest));
-                }
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-        return "성공적으로 저장하였습니다.";
-    }
-
-    public String createSigungu(Integer areaCode) {
-        StringBuffer result = new StringBuffer();
-        String uri = base_url + "areaCode1?" +
-            "pageNo=1&numOfRows=50&_type=json&MobileOS=ETC&MobileApp=AppTest&" +
-            "serviceKey=" + service_key +
-            "&areaCode=" + areaCode;
-        Sido sido = sidoRepository.findBySidoCode(areaCode);
-        if (sido == null) {
-            throw new InvalidAreaCodeException(ErrorCode.INVALID_AREACODE_EXCEPTION);
-        }
-        //log.info(sido.getSidoName());
-
-        try {
-            URL url = new URL(uri);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-type", "application/json");
-
-            BufferedReader bf = new BufferedReader(
-                new InputStreamReader(url.openStream(), "UTF-8"));
-            result.append(bf.readLine());
-
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
-            //log.info(jsonObject.toJSONString());
-            JSONObject jsonObject1 = (JSONObject) jsonObject.get("response");
-            //log.info(jsonObject1.toJSONString());
-            JSONObject jsonObject2 = (JSONObject) jsonObject1.get("body");
-            //log.info(jsonObject2.toJSONString());
-            JSONObject jsonObject3 = (JSONObject) jsonObject2.get("items");
-            //log.info(jsonObject3.toJSONString());
-            JSONArray jsonArray = (JSONArray) jsonObject3.get("item");
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                JSONObject object = (JSONObject) jsonArray.get(i);
-                String sigunguName = (String) object.get("name");
-                String tmp = (String) object.get("code");
-                Integer sigunguCode = Integer.parseInt(tmp);
-                TourSigunguStoreRequest sigunguStoreRequest = new TourSigunguStoreRequest(
-                    sigunguName, sigunguCode, sido);
-                if (sigunguRepository.findBySigunguCodeAndSido(sigunguCode, sido) == null) {
-                    sigunguRepository.save(TourMapper.toSigungu(sigunguStoreRequest));
-                }
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-        return "성공적으로 저장하였습니다.";
-    }
-
     public String createTour(Integer areaCode, Integer sigunguCode) {
         StringBuffer result = new StringBuffer();
         String uri = base_url + "areaBasedList1?" +
@@ -161,19 +59,6 @@ public class TourService {
         }
         if (sigunguCode != 0) {
             uri += "&sigunguCode=" + sigunguCode;
-        }
-
-        if (areaCode != 0) {
-            Sido sido = sidoRepository.findBySidoCode(areaCode);
-            if (sido == null) {
-                throw new InvalidAreaCodeException(ErrorCode.INVALID_AREACODE_EXCEPTION);
-            }
-            if (sigunguCode != 0) {
-                Sigungu sigungu = sigunguRepository.findBySigunguCodeAndSido(sigunguCode, sido);
-                if (sigungu == null) {
-                    throw new InvalidSigunguCodeException(ErrorCode.INVALID_SIGUNGU_CODE_EXCEPTION);
-                }
-            }
         }
 
         try {
@@ -245,7 +130,7 @@ public class TourService {
         return contentIdList;
     }
 
-    public void rotateForImpairment(){
+    public void rotateForImpairment() {
         List<Long> contentIdList = createContentIdList();
         for (Long contentId : contentIdList) {
             Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
@@ -329,7 +214,7 @@ public class TourService {
         return false;
     }
 
-    public void rotateForTourImage(){
+    public void rotateForTourImage() {
         List<Long> contentIdList = createContentIdList();
         for (Long contentId : contentIdList) {
             Tour tour = tourRepository.findByContentId(contentId).orElseThrow(
@@ -341,11 +226,11 @@ public class TourService {
         }
     }
 
-    private void createTourImage(Long contentId){
+    private void createTourImage(Long contentId) {
         result = new StringBuffer();
         String uri =
             base_url + "detailImage1?serviceKey=" + service_key + "&contentId=" + contentId
-                + postfix +"&imageYN=Y&subImageYN=Y";
+                + postfix + "&imageYN=Y&subImageYN=Y";
 
         try {
             initConnection(uri);
@@ -359,9 +244,9 @@ public class TourService {
             String OpenAPIKeys = "originimgurl";
             List<String> TourImageList = new ArrayList<>();
 
-            for(int i = 0; i<parsedItemArray.size(); i++){
+            for (int i = 0; i < parsedItemArray.size(); i++) {
                 JSONObject parsedItem = (JSONObject) parsedItemArray.get(i);
-                if(isContainKey(parsedItem, OpenAPIKeys)){
+                if (isContainKey(parsedItem, OpenAPIKeys)) {
                     TourImageList.add(parsedItem.get(OpenAPIKeys).toString());
                 }
             }
@@ -370,7 +255,7 @@ public class TourService {
                 () -> new ContentIdNotFoundException(ErrorCode.CONTENT_ID_NOT_FOUND_EXCEPTION)
             );
 
-            for(String tourImage : TourImageList){
+            for (String tourImage : TourImageList) {
                 tourImageRepository.save(TourMapper.toTourImage(tour, tourImage));
             }
         } catch (Exception e) {
@@ -425,9 +310,14 @@ public class TourService {
                 if (isContainKey(finalItem, OpenAPIKeys[i])) {
                     String item = (String) finalItem.get(OpenAPIKeys[i]);
                     if (i == 0) { // homepage는 url 발췌 필요
-                        if (!item.isBlank()) SpecInfoArr[i] = extractHref(item);
-                        else SpecInfoArr[i] = item;
-                    } else SpecInfoArr[i] = item;
+                        if (!item.isBlank()) {
+                            SpecInfoArr[i] = extractHref(item);
+                        } else {
+                            SpecInfoArr[i] = item;
+                        }
+                    } else {
+                        SpecInfoArr[i] = item;
+                    }
                 }
             }
             tour.updateHomePageAndOverview(SpecInfoArr[0], SpecInfoArr[1]);

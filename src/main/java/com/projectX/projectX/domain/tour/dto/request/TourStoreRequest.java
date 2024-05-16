@@ -1,7 +1,5 @@
 package com.projectX.projectX.domain.tour.dto.request;
 
-import com.projectX.projectX.domain.tour.entity.Sido;
-import com.projectX.projectX.domain.tour.entity.Sigungu;
 import lombok.Builder;
 
 public record TourStoreRequest(
