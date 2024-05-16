@@ -2,16 +2,14 @@ package com.projectX.projectX.domain.tour.entity;
 
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.ContentType;
+import com.projectX.projectX.global.common.JejuRegion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,14 +25,6 @@ public class Tour extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("투어 api 식별자")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigungu_id")
-    private Sigungu sigungu;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sido_id")
-    private Sido sido;
 
     @Column(length = 100)
     @Comment("주소")
@@ -55,13 +45,13 @@ public class Tour extends BaseEntity {
     @Comment("콘텐츠 타입 id")
     private ContentType contentType;
 
+    @Enumerated(EnumType.STRING)
+    @Comment("제주도 지역 구분")
+    private JejuRegion jejuRegion;
+
     @Column(nullable = false)
     @Comment("대표 이미지 ")
     private String imageUrl;
-
-    @Column(nullable = false)
-    @Comment("대표 이미지 썸네일")
-    private String thumbnailImageUrl;
 
     @Column(nullable = false)
     @Comment("GPS X좌표")
@@ -87,21 +77,17 @@ public class Tour extends BaseEntity {
     private String overview;
 
     @Builder
-    public Tour(Long id, Sigungu sigungu, Sido sido, String address, String spec_address,
-        Long zipCode,
-        Long contentId, ContentType contentType, String imageUrl, String thumbnailImageUrl,
-        float mapX,
-        float mapY, String title, String phone, String homepageUrl, String overview) {
+    public Tour(Long id, String address, String spec_address, Long zipCode, Long contentId,
+        ContentType contentType, JejuRegion jejuRegion, String imageUrl, float mapX, float mapY,
+        String title, String phone, String homepageUrl, String overview) {
         this.id = id;
-        this.sigungu = sigungu;
-        this.sido = sido;
         this.address = address;
         this.spec_address = spec_address;
         this.zipCode = zipCode;
         this.contentId = contentId;
         this.contentType = contentType;
+        this.jejuRegion = jejuRegion;
         this.imageUrl = imageUrl;
-        this.thumbnailImageUrl = thumbnailImageUrl;
         this.mapX = mapX;
         this.mapY = mapY;
         this.title = title;
