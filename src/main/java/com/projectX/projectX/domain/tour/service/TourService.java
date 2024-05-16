@@ -1,12 +1,10 @@
 package com.projectX.projectX.domain.tour.service;
 
-import com.projectX.projectX.domain.tour.dto.request.TourStoreRequest;
 import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.tour.exception.ContentIdNotFoundException;
-import com.projectX.projectX.domain.tour.exception.InvalidAreaCodeException;
 import com.projectX.projectX.domain.tour.exception.InvalidRequestException;
-import com.projectX.projectX.domain.tour.exception.InvalidSigunguCodeException;
 import com.projectX.projectX.domain.tour.exception.InvalidURIException;
+import com.projectX.projectX.domain.tour.exception.NotFoundJejuRegionException;
 import com.projectX.projectX.domain.tour.repository.ImpairmentRepository;
 import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
@@ -34,6 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TourService {
+
     private final ImpairmentRepository impairmentRepository;
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
@@ -49,17 +48,13 @@ public class TourService {
 
     private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
-    public String createTour(Integer areaCode, Integer sigunguCode) {
+    public String createTour() {
+        String uri = base_url + "areaBasedList1?"
+            + "serviceKey=" + service_key
+            + "&areaCode=39"
+            + postfix + "&pageNo=1&numOfRows=410";
+
         StringBuffer result = new StringBuffer();
-        String uri = base_url + "areaBasedList1?" +
-            "pageNo=1&numOfRows=100&_type=json&MobileOS=ETC&MobileApp=AppTest&" +
-            "serviceKey=" + service_key;
-        if (areaCode != 0) {
-            uri += "&areaCode=" + areaCode;
-        }
-        if (sigunguCode != 0) {
-            uri += "&sigunguCode=" + sigunguCode;
-        }
 
         try {
             URL url = new URL(uri);
@@ -73,52 +68,58 @@ public class TourService {
 
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(result.toString());
-            JSONObject jsonObject1 = (JSONObject) jsonObject.get("response");
-            JSONObject jsonObject2 = (JSONObject) jsonObject1.get("body");
-            JSONObject jsonObject3 = (JSONObject) jsonObject2.get("items");
-            JSONArray jsonArray = (JSONArray) jsonObject3.get("item");
+            JSONObject parsedResponse = getJSONObject(jsonObject, "response");
+            JSONObject parsedBody = getJSONObject(parsedResponse, "body");
+            JSONObject parsedItems = getJSONObject(parsedBody, "items");
+            JSONArray jsonArray = (JSONArray) parsedItems.get("item");
+
+            String[] OpenAPIKeys = {"addr1", "addr2", "contentid", "contenttypeid",
+                "zipcode", "mapx", "mapy", "title", "tel", "firstimage"};
+            String[] tourkeys = {"address", "specAddress", "contentId", "contentTypeId",
+                "zipCode", "mapX", "mapY", "title", "phone", "imageUrl", "jejuRegion"};
+            HashMap<String, String> tourMap = new HashMap<>();
             for (int i = 0; i < jsonArray.size(); ++i) {
-                JSONObject object = (JSONObject) jsonArray.get(i);
-
-                String address = (String) object.get("addr1");
-                String specAddress = (String) object.get("addr2");
-                String tmp = (String) object.get("areacode");
-                Integer sidoCode = Integer.valueOf(tmp);
-                Sido sido = sidoRepository.findBySidoCode(sidoCode);
-                if (sido == null) {
-                    throw new InvalidAreaCodeException(ErrorCode.INVALID_AREACODE_EXCEPTION);
+                JSONObject finalItem = (JSONObject) jsonArray.get(i);
+                for (int j = 0; j < OpenAPIKeys.length; ++j) {
+                    if (isContainKey(finalItem, OpenAPIKeys[j])) {
+                        tourMap.put(tourkeys[j], (String) finalItem.get(OpenAPIKeys[j]));
+                    }
                 }
-                tmp = (String) object.get("sigungucode");
-                Integer sigunCode = Integer.valueOf(tmp);
-                Sigungu sigungu = sigunguRepository.findBySigunguCodeAndSido(sigunCode, sido);
-                if (sigungu == null) {
-                    throw new InvalidSigunguCodeException(ErrorCode.INVALID_SIGUNGU_CODE_EXCEPTION);
-                }
-                tmp = (String) object.get("contentid");
-                Long contentId = Long.valueOf(tmp);
-                tmp = (String) object.get("contenttypeid");
-                Integer contentTypeId = Integer.valueOf(tmp);
-                tmp = (String) object.get("zipcode");
-                Long zipCode = Long.valueOf(tmp);
-                String imageUrl = (String) object.get("firstimage");
-                String thumbnailImageUrl = (String) object.get("firstimage2");
-                tmp = (String) object.get("mapx");
-                Float mapX = Float.parseFloat(tmp);
-                tmp = (String) object.get("mapy");
-                Float mapY = Float.parseFloat(tmp);
-                String title = (String) object.get("title");
-                String phone = (String) object.get("tel");
 
-                TourStoreRequest tourStoreRequest = new TourStoreRequest(address, specAddress, sido,
-                    sigungu, contentId, contentTypeId, zipCode, imageUrl, thumbnailImageUrl, mapX,
-                    mapY, title, phone);
-                tourRepository.save(TourMapper.toTour(tourStoreRequest));
+                String num = findJejuRegion(tourMap.get("address"));
+                tourMap.put(tourkeys[tourkeys.length - 1], num);
+
+                tourRepository.save(TourMapper.toTour(tourMap));
+
 
             }
+        } catch (MalformedURLException e) {
+            throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
         }
+
         return "성공적으로 저장하였습니다.";
+    }
+
+    private static String findJejuRegion(String value) {
+        if (value.contains("제주시")) {
+            if (value.contains("구좌읍") || value.contains("조천읍")) {
+                return "2";
+            } else if (value.contains("애월읍") || value.contains("한림읍") || value.contains("한경읍")) {
+                return "6";
+            }
+            return "1";
+        } else if (value.contains("서귀포시")) {
+            if (value.contains("대정읍") || value.contains("안덕면")) {
+                return "5";
+            } else if (value.contains("남원읍") || value.contains("표선면") || value.contains("성산읍")) {
+                return "3";
+            }
+            return "4";
+        }
+
+        throw new NotFoundJejuRegionException(ErrorCode.JEJU_REGION_NOT_FOUND);
     }
 
     private List<Long> createContentIdList() {
