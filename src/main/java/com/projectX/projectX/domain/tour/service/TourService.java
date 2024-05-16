@@ -48,7 +48,7 @@ public class TourService {
 
     private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
-    public String createTour() {
+    public void createTour() {
         String uri = base_url + "areaBasedList1?"
             + "serviceKey=" + service_key
             + "&areaCode=39"
@@ -98,8 +98,6 @@ public class TourService {
         } catch (Exception e) {
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
         }
-
-        return "성공적으로 저장하였습니다.";
     }
 
     private static String findJejuRegion(String value) {
