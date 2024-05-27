@@ -44,7 +44,14 @@ public class CSVReader {
 
             while ((line = br.readLine()) != null) {
                 String[] lineArr = line.split(",");
-                Map<String, String> cafeMap = createCafeInfo(lineArr, firstLine);
+                Map<String, String> cafeMap = new HashMap<>();
+
+                if (csv.getName().equals("전국 북카페 정보.csv")) {
+                    cafeMap = createBookCafeInfo(lineArr, firstLine);
+                } else {
+                    cafeMap = createCafeInfo(lineArr, firstLine);
+                }
+
                 if (!cafeMap.isEmpty()) {
                     csvList.add(cafeMap);
                 }
@@ -120,6 +127,46 @@ public class CSVReader {
         return new HashMap<>();
     }
 
+    private Map<String, String> createBookCafeInfo(String[] line, List<String> header) {
+        String[] excepts = {"만화책"};
+
+        int idxAddr = getIdx(header, "FCLTY_ROAD_NM_ADDR");
+        int idxCafeType = getIdx(header, "MLSFC_NM");
+
+        if (checkSido(line, idxAddr, "제주")) {
+            if (checkCafeType(line, idxCafeType, excepts)) {
+                return new HashMap<>();
+            }
+
+            Map<String, String> cafeInfoMap = new HashMap<>();
+
+            //name
+            int idxCafeName = getIdx(header, "FCLTY_NM");
+
+            String name = line[idxCafeName];
+            cafeInfoMap.put("name", name);
+            log.info(name);
+
+            //address
+            String addr = line[idxAddr];
+            cafeInfoMap.put("address", addr);
+
+            //latitude
+            int idxLA = getIdx(header, "FCLTY_LA");
+            cafeInfoMap.put("latitude", line[idxLA]);
+
+            //longitude
+            int idxLO = getIdx(header, "FCLTY_LO");
+            cafeInfoMap.put("longitude", line[idxLO]);
+
+            //cafeType
+            cafeInfoMap.put("cafeType", CafeType.BOOK.toString());
+
+            return cafeInfoMap;
+        }
+        return new HashMap<>();
+    }
+
     private int getIdx(List<String> header, String targetHeader) {
         return header.indexOf(targetHeader);
     }
@@ -135,7 +182,7 @@ public class CSVReader {
 
     private Boolean checkSido(String[] line, int idx, String targetString) {
         String Sido = line[idx];
-        if (Sido.equals(targetString)) {
+        if (Sido.contains(targetString)) {
             return true;
         }
         return false;

@@ -33,4 +33,14 @@ public class CafeRestController {
         csvReader.saveCafeInfo(cafeList);
         return ResponseDTO.res("카페 정보를 성공적으로 저장하였습니다.");
     }
+
+    @GetMapping("/bookCafeInfo")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "북카페 정보 저장 API", description = "전국 북카페 정보 csv 파일을 통해 카페 정보를 디비에 저장하는 api입니다.")
+    public ResponseDTO<String> createBookCafeInfo() {
+        File csv = new File("C://home/root/Downloads/전국 북카페 정보.csv");
+        List<Map<String, String>> cafeList = csvReader.readCSV(csv);
+        csvReader.saveCafeInfo(cafeList);
+        return ResponseDTO.res("카페 정보를 성공적으로 저장하였습니다.");
+    }
 }
