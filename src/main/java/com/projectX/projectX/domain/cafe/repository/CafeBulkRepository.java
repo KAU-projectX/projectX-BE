@@ -21,7 +21,7 @@ public class CafeBulkRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public void saveAll(List<Map<String, String>> cafes) {
+    public void saveCafe(List<Map<String, String>> cafes) {
         String sql =
             "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at)" +
                 "VALUES (?, ?, ?, ?, ?, ?)";

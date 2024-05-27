@@ -24,7 +24,7 @@ public class CSVReader {
     private final CafeBulkRepository cafeBulkRepository;
 
     public void saveCafeInfo(List<Map<String, String>> csvList) {
-        cafeBulkRepository.saveAll(csvList);
+        cafeBulkRepository.saveCafe(csvList);
     }
 
     public List<Map<String, String>> readCSV(File csv) {
