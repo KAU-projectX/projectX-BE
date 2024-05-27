@@ -27,9 +27,8 @@ public class CSVReader {
         cafeBulkRepository.saveAll(csvList);
     }
 
-    public List<Map<String, String>> readCSV() {
+    public List<Map<String, String>> readCSV(File csv) {
         List<Map<String, String>> csvList = new ArrayList<>();
-        File csv = new File("C://home/root/전국 카페 정보.csv");
         log.info(csv.getName());
         BufferedReader br = null;
         String line = "";
