@@ -4,11 +4,11 @@ import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.cafe.repository.CafeBulkRepository;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.cafe.util.HttpUtil;
+import com.projectX.projectX.domain.cafe.util.JsonUtil;
 import com.projectX.projectX.global.common.CafeType;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,14 +38,14 @@ public class LibraryService {
     @Value("${kakao.base-url}")
     private String kakao_base_url;
 
-    public void createLibrary() {
+    public void createLibraryInfo() {
         List<Map<String, String>> libraryList = getLibrary("create");
         if (!libraryList.isEmpty()) {
             cafeBulkRepository.saveCafe(libraryList);
         }
     }
 
-    public void updateLibrary() {
+    public void updateLibraryInfo() {
         List<Map<String, String>> libraryList = getLibrary("update");
         if (!libraryList.isEmpty()) {
             cafeBulkRepository.updateCafe(libraryList);
@@ -60,8 +60,9 @@ public class LibraryService {
 
         JSONObject jsonObject = HttpUtil.connectHttp(url, "Content-type",
             "application/json");
-        JSONArray jsonArray = parseJsonObject(jsonObject, jsonForm);
-        List<Map<String, String>> libraryList = parseJsonArray(jsonArray, openAPIKeys, libraryKeys);
+        JSONArray jsonArray = JsonUtil.parseJsonObject(jsonObject, jsonForm);
+        List<Map<String, String>> libraryList = JsonUtil.parseJsonArray(jsonArray, openAPIKeys,
+            libraryKeys);
         List<Map<String, String>> midLibraryList = addCafeType(libraryList, 4);
         List<Map<String, String>> finalLibraryList = checkAlreadyExist(midLibraryList, method);
 
@@ -84,13 +85,12 @@ public class LibraryService {
             String url = kakao_base_url + "query=" + query;
 
             JSONObject jsonObject = HttpUtil.connectHttp(url, "Authorization", kakao_key);
-            JSONArray jsonArray = parseJsonObject(jsonObject, jsonForm);
+            JSONArray jsonArray = JsonUtil.parseJsonObject(jsonObject, jsonForm);
 
-            String address = map.get("address");
-            String target_address = address.replaceAll("\\s", "");
-            log.info(address);
+            log.info(map.get("address"));
+            String address = JsonUtil.removeEmpty(map.get("address"));
 
-            JSONObject object = checkPlace(jsonArray, openAPIKeys, target_address);
+            JSONObject object = checkPlace(jsonArray, openAPIKeys, address);
             log.info(object.toJSONString());
 
             for (int i = 0; i < insertAPIKeys.length; ++i) {
@@ -110,10 +110,9 @@ public class LibraryService {
             JSONObject item = (JSONObject) o;
 
             for (String keys : checkKeys) {
-                if (HttpUtil.isContainKey(item, keys)) {
-                    String address = item.get(keys).toString();
-                    String json_address = address.replaceAll("\\s", "");
-                    if (json_address.contains(target) || target.contains(json_address)) {
+                if (JsonUtil.isContainKey(item, keys)) {
+                    String address = JsonUtil.removeEmpty(item.get(keys).toString());
+                    if (address.contains(target) || target.contains(address)) {
                         return item;
                     }
                 }
@@ -147,38 +146,10 @@ public class LibraryService {
         return updateMapList;
     }
 
-    private List<Map<String, String>> addCafeType(List<Map<String, String>> mapList, Integer type) {
+    public List<Map<String, String>> addCafeType(List<Map<String, String>> mapList, Integer type) {
         CafeType cafeType = CafeType.fromInt(type);
         for (Map<String, String> map : mapList) {
             map.put("cafeType", cafeType.toString());
-        }
-
-        return mapList;
-    }
-
-    private JSONArray parseJsonObject(JSONObject jsonObject, String[] jsonForm) {
-        for (int i = 0; i < jsonForm.length - 1; ++i) {
-            jsonObject = (JSONObject) jsonObject.get(jsonForm[i]);
-        }
-
-        return (JSONArray) jsonObject.get(jsonForm[jsonForm.length - 1]);
-    }
-
-    private List<Map<String, String>> parseJsonArray(JSONArray jsonArray, String[] OpenAPIKeys,
-        String[] mapKeys) {
-        List<Map<String, String>> mapList = new ArrayList<>();
-
-        for (Object o : jsonArray) {
-            Map<String, String> libraryMap = new HashMap<>();
-            JSONObject finalItem = (JSONObject) o;
-
-            for (int i = 0; i < OpenAPIKeys.length; ++i) {
-                if (HttpUtil.isContainKey(finalItem, OpenAPIKeys[i])) {
-                    libraryMap.put(mapKeys[i], (String) finalItem.get(OpenAPIKeys[i]));
-                }
-            }
-
-            mapList.add(libraryMap);
         }
 
         return mapList;
