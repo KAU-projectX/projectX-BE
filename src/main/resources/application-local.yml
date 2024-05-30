@@ -46,3 +46,11 @@ jwt:
 tour-api:
   service-key: ${TOUR_API_SERVICE_KEY}
   base-url: http://apis.data.go.kr/B551011/KorWithService1/
+
+jeju-datahub:
+  project-key: ${JEJU_DATA_HUB_PROJECT_KEY}
+  base-url: https://open.jejudatahub.net/api/proxy/aa9D99t7D8aD799aa9tt8aD8Dttt8aD8/
+
+kakao:
+  base-url: https://dapi.kakao.com/v2/local/search/keyword.json?
+  key: ${KAKAO_MAP_KEY}
