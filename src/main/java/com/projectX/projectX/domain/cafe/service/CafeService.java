@@ -1,6 +1,8 @@
 package com.projectX.projectX.domain.cafe.service;
 
+import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.cafe.repository.CafeBulkRepository;
+import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.cafe.util.CSVReader;
 import com.projectX.projectX.global.common.CafeType;
 import java.io.File;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,13 +22,16 @@ import org.springframework.stereotype.Service;
 public class CafeService {
 
     private final CafeBulkRepository cafeBulkRepository;
+    private final CafeRepository cafeRepository;
     private final LibraryService libraryService;
-    private final String[] header = {"name", "cafeType", "address", "latitude", "longitude"};
+    private final String[] header = {"cafeId", "name", "cafeType", "address", "latitude",
+        "longitude"};
 
     public void createCafeInfo() {
         String[] franchise = {"스타벅스", "투썸플레이스", "엔제리너스", "요거프레소", "이디야커피", "카페베네", "커피빈", "탐앤탐스",
             "파스쿠찌", "할리스커피", "드롭탑", "메가커피", "더리터", "봄봄", "더벤티", "커피베이", "디저트39"};
         String[] excepts = {"대형주점/호프/라이브카페/클럽", "설빙", "카페띠아모", "스무디킹", "망고식스"};
+        String[] cafeId = {"ID"};
         String[] name = {"POI_NM", "BHF_NM"};
         String[] cafeType = {"CL_NM"};
         String[] addr = {"CTPRVN_NM", "SIGNGU_NM", "LEGALDONG_NM", "LI_NM", "LNBR_NO"};
@@ -34,15 +40,20 @@ public class CafeService {
         String fileRoot = "C://Users/dlwns/Downloads/전국 카페 정보.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "CTPRVN_NM", "제주특별자치도");
-        List<Map<String, String>> midCafeList = getFinalMap(cafeList, name, cafeType, addr, la, lo,
+        List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
+            la, lo,
             excepts);
         List<Map<String, String>> finalCafeList = defineCafeType(midCafeList, franchise);
 
-        cafeBulkRepository.saveCafe(finalCafeList);
+        List<Map<String, String>> finalCafeList1 = checkAlreadyExistByCafeId(finalCafeList,
+            "create");
+        log.info(finalCafeList1.toString());
+        cafeBulkRepository.saveCafe(finalCafeList1);
     }
 
     public void createBookCafeInfo() {
         String[] excepts = {"만화책"};
+        String[] cafeId = {"ESNTL_ID"};
         String[] name = {"FCLTY_NM"};
         String[] cafeType = {"MLSFC_NM"};
         String[] addr = {"FCLTY_ROAD_NM_ADDR"};
@@ -51,16 +62,20 @@ public class CafeService {
         String fileRoot = "C://Users/dlwns/Downloads/전국 북카페 정보.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "FCLTY_ROAD_NM_ADDR", "제주");
-        List<Map<String, String>> midCafeList = getFinalMap(cafeList, name, cafeType, addr, la, lo,
+        List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
+            la, lo,
             excepts);
         List<Map<String, String>> finalCafeList = libraryService.addCafeType(midCafeList, 1);
+        log.info(finalCafeList.toString());
 
-        cafeBulkRepository.saveCafe(finalCafeList);
+        cafeBulkRepository.saveCafe(checkAlreadyExistByCafeId(finalCafeList, "create"));
     }
 
-    public List<Map<String, String>> getFinalMap(List<Map<String, String>> mapList, String[] name,
+    private List<Map<String, String>> getFinalMap(List<Map<String, String>> mapList,
+        String[] cafeId, String[] name,
         String[] cafeType, String[] addr, String[] la, String[] lo, String[] excepts) {
         List<String[]> convertHeader = new ArrayList<>();
+        convertHeader.add(cafeId);
         convertHeader.add(name);
         convertHeader.add(cafeType);
         convertHeader.add(addr);
@@ -77,9 +92,8 @@ public class CafeService {
             }
             returnList.add(tmpMap);
         }
-        List<Map<String, String>> mapList1 = exceptTargetInfo(returnList, excepts, "cafeType");
 
-        return mapList1;
+        return exceptTargetInfo(returnList, excepts, "cafeType");
     }
 
     private String combineString(String[] targets, Map<String, String> map) {
@@ -127,7 +141,8 @@ public class CafeService {
         List<Map<String, String>> returnList = new ArrayList<>();
         for (Map<String, String> map : mapList) {
             for (String target : targets) {
-                if (!Objects.equals(target, map.get(targetString))) {
+                if (!map.get(targetString).contains(target) && !target.contains(
+                    map.get(targetString))) {
                     returnList.add(map);
                     break;
                 }
@@ -139,5 +154,29 @@ public class CafeService {
     private boolean checkCondition(Map<String, String> map, String headerString, String target) {
         String dest = map.get(headerString);
         return dest.contains(target);
+    }
+
+    public List<Map<String, String>> checkAlreadyExistByCafeId(List<Map<String, String>> mapList,
+        String method) {
+        List<Map<String, String>> createMapList = new ArrayList<>();
+        List<Map<String, String>> updateMapList = new ArrayList<>();
+
+        for (Map<String, String> map : mapList) {
+            String cafeId = map.get("cafeId");
+
+            Optional<Cafe> optionalCafe = cafeRepository.findByCafeId(cafeId);
+            if (optionalCafe.isEmpty()) {
+                createMapList.add(map);
+                continue;
+            }
+            Cafe cafe = optionalCafe.get();
+            map.put("id", cafe.getId().toString());
+            updateMapList.add(map);
+        }
+
+        if (Objects.equals("create", method)) {
+            return createMapList;
+        }
+        return updateMapList;
     }
 }
