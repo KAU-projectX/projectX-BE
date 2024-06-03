@@ -21,8 +21,8 @@ public class CafeBulkRepository {
     @Transactional
     public void saveCafe(List<Map<String, String>> cafes) {
         String sql =
-            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at)" +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, uri,  created_at)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql,
             new BatchPreparedStatementSetter() {
@@ -33,7 +33,8 @@ public class CafeBulkRepository {
                     ps.setString(3, cafes.get(i).get("address"));
                     ps.setDouble(4, Double.parseDouble(cafes.get(i).get("latitude")));
                     ps.setDouble(5, Double.parseDouble(cafes.get(i).get("longitude")));
-                    ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+                    ps.setString(6, cafes.get(i).get("uri"));
+                    ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
                 }
 
                 @Override
@@ -48,7 +49,7 @@ public class CafeBulkRepository {
     @Transactional
     public void updateCafe(List<Map<String, String>> cafes) {
         String sql =
-            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, updated_at = ? "
+            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, uri = ?, updated_at = ? "
                 +
                 "WHERE id = ?";
 
@@ -61,8 +62,9 @@ public class CafeBulkRepository {
                     ps.setString(3, cafes.get(i).get("address"));
                     ps.setDouble(4, Double.parseDouble(cafes.get(i).get("latitude")));
                     ps.setDouble(5, Double.parseDouble(cafes.get(i).get("longitude")));
-                    ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-                    ps.setLong(7, Long.parseLong(
+                    ps.setString(6, cafes.get(i).get("uri"));
+                    ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                    ps.setLong(8, Long.parseLong(
                         cafes.get(i).get("id"))); // assuming 'id' is provided for each cafe
                 }
 
