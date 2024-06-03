@@ -21,8 +21,9 @@ public class CafeBulkRepository {
     @Transactional
     public void saveCafe(List<Map<String, String>> cafes) {
         String sql =
-            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at)" +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at, cafe_id)"
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql,
             new BatchPreparedStatementSetter() {
@@ -34,6 +35,8 @@ public class CafeBulkRepository {
                     ps.setDouble(4, Double.parseDouble(cafes.get(i).get("latitude")));
                     ps.setDouble(5, Double.parseDouble(cafes.get(i).get("longitude")));
                     ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+                    ps.setString(7, cafes.get(i).get("cafeId"));
+
                 }
 
                 @Override
@@ -48,7 +51,7 @@ public class CafeBulkRepository {
     @Transactional
     public void updateCafe(List<Map<String, String>> cafes) {
         String sql =
-            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, updated_at = ? "
+            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, updated_at = ?, cafe_id = ? "
                 +
                 "WHERE id = ?";
 
@@ -62,7 +65,8 @@ public class CafeBulkRepository {
                     ps.setDouble(4, Double.parseDouble(cafes.get(i).get("latitude")));
                     ps.setDouble(5, Double.parseDouble(cafes.get(i).get("longitude")));
                     ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-                    ps.setLong(7, Long.parseLong(
+                    ps.setString(7, cafes.get(i).get("cafeId"));
+                    ps.setLong(8, Long.parseLong(
                         cafes.get(i).get("id"))); // assuming 'id' is provided for each cafe
                 }
 

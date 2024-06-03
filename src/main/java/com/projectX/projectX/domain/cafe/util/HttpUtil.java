@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,12 +50,5 @@ public class HttpUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static boolean isContainKey(JSONObject obj, String key) {
-        if (!Objects.isNull(obj)) {
-            return obj.containsKey(key);
-        }
-        return false;
     }
 }

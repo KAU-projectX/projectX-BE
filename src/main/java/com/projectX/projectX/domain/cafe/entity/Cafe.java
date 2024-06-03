@@ -24,6 +24,10 @@ public class Cafe extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Comment("카페 id")
+    @Column(length = 100)
+    private String cafeId;
+
     @Comment("카페 이름")
     @Column(length = 100, nullable = false)
     private String name;
