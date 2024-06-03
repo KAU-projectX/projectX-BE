@@ -77,6 +77,8 @@ dependencies {
 
 	//json 처리
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+	implementation group: 'org.json', name: 'json', version: '20231013'
+
 }
 
 tasks.named('test') {
