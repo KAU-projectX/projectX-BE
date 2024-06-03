@@ -38,7 +38,7 @@ public class JwtUtil {
     public GeneratedToken generateToken(String email, String role) {
         String accessToken = generateAccessToken(email, role);
         String refreshToken = generateRefreshToken(email, role);
-        //memberService.saveTokenInfo(email,accessToken,refreshToken);
+        memberService.saveTokenInfo(email,accessToken,refreshToken);
         return new GeneratedToken(accessToken, refreshToken);
     }
 
