@@ -42,14 +42,18 @@ public class Cafe extends BaseEntity {
     @Comment("경도")
     private double longitude;
 
+    @Comment("카페 URI")
+    private String uri;
+
     @Builder
     public Cafe(Long id, String name, CafeType cafeType, String address, double latitude,
-        double longitude) {
+        double longitude, String uri) {
         this.id = id;
         this.name = name;
         this.cafeType = cafeType;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.uri = uri;
     }
 }
