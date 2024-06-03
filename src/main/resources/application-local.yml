@@ -54,3 +54,6 @@ jeju-datahub:
 kakao:
   base-url: https://dapi.kakao.com/v2/local/search/keyword.json?
   key: ${KAKAO_MAP_KEY}
+
+
+csv-root: ${LOCAL_CSV_ROOT}
