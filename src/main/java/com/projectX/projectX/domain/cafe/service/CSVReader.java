@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class CSVReader {
 
     private final CafeBulkRepository cafeBulkRepository;
+    private final CafeService cafeService;
 
     public void saveCafeInfo(List<Map<String, String>> csvList) {
         cafeBulkRepository.saveCafe(csvList);
@@ -94,35 +95,41 @@ public class CSVReader {
             int idxCafeBranch = getIdx(header, "BHF_NM");
 
             String name = line[idxCafeName] + line[idxCafeBranch];
-            cafeInfoMap.put("name", name);
+            if (cafeService.isPlaceExist(name)) {
+                cafeInfoMap.put("name", name);
 
-            //address
-            int idxSigungu = getIdx(header, "SIGNGU_NM");
-            int idxDong = getIdx(header, "LEGALDONG_NM");
-            int idxLi = getIdx(header, "LI_NM");
-            int idxNo = getIdx(header, "LNBR_NO");
+                //address
+                int idxSigungu = getIdx(header, "SIGNGU_NM");
+                int idxDong = getIdx(header, "LEGALDONG_NM");
+                int idxLi = getIdx(header, "LI_NM");
+                int idxNo = getIdx(header, "LNBR_NO");
 
-            String addr = "제주특별자치도" + line[idxSigungu] + line[idxDong] + line[idxLi] + line[idxNo];
-            cafeInfoMap.put("address", addr);
+                String addr =
+                    "제주특별자치도" + line[idxSigungu] + line[idxDong] + line[idxLi] + line[idxNo];
+                cafeInfoMap.put("address", addr);
 
-            //latitude
-            int idxLA = getIdx(header, "LC_LA");
-            cafeInfoMap.put("latitude", line[idxLA]);
+                //latitude
+                int idxLA = getIdx(header, "LC_LA");
+                cafeInfoMap.put("latitude", line[idxLA]);
 
-            //longitude
-            int idxLO = getIdx(header, "LC_LO");
-            cafeInfoMap.put("longitude", line[idxLO]);
+                //longitude
+                int idxLO = getIdx(header, "LC_LO");
+                cafeInfoMap.put("longitude", line[idxLO]);
 
-            //cafeType
-            String cafe;
-            if (checkCafeType(line, idxCafeName, franchise)) {
-                cafe = CafeType.fromInt(3).toString();
-            } else {
-                cafe = CafeType.fromInt(2).toString();
+                //cafeType
+                String cafe;
+                if (checkCafeType(line, idxCafeName, franchise)) {
+                    cafe = CafeType.fromInt(3).toString();
+                } else {
+                    cafe = CafeType.fromInt(2).toString();
+                }
+                cafeInfoMap.put("cafeType", cafe);
+
+                //uri
+                cafeInfoMap.put("uri", cafeService.getPlaceURI(name));
+
+                return cafeInfoMap;
             }
-            cafeInfoMap.put("cafeType", cafe);
-
-            return cafeInfoMap;
         }
         return new HashMap<>();
     }
@@ -144,25 +151,30 @@ public class CSVReader {
             int idxCafeName = getIdx(header, "FCLTY_NM");
 
             String name = line[idxCafeName];
-            cafeInfoMap.put("name", name);
-            log.info(name);
+            if (cafeService.isPlaceExist(name)) {
+                cafeInfoMap.put("name", name);
+                log.info(name);
 
-            //address
-            String addr = line[idxAddr];
-            cafeInfoMap.put("address", addr);
+                //address
+                String addr = line[idxAddr];
+                cafeInfoMap.put("address", addr);
 
-            //latitude
-            int idxLA = getIdx(header, "FCLTY_LA");
-            cafeInfoMap.put("latitude", line[idxLA]);
+                //latitude
+                int idxLA = getIdx(header, "FCLTY_LA");
+                cafeInfoMap.put("latitude", line[idxLA]);
 
-            //longitude
-            int idxLO = getIdx(header, "FCLTY_LO");
-            cafeInfoMap.put("longitude", line[idxLO]);
+                //longitude
+                int idxLO = getIdx(header, "FCLTY_LO");
+                cafeInfoMap.put("longitude", line[idxLO]);
 
-            //cafeType
-            cafeInfoMap.put("cafeType", CafeType.BOOK.toString());
+                //cafeType
+                cafeInfoMap.put("cafeType", CafeType.BOOK.toString());
 
-            return cafeInfoMap;
+                //uri
+                cafeInfoMap.put("uri", cafeService.getPlaceURI(name));
+
+                return cafeInfoMap;
+            }
         }
         return new HashMap<>();
     }
