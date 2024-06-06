@@ -16,6 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().contains("token/") || request.getRequestURI().contains("v1/cafe");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         try {
