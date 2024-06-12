@@ -5,7 +5,10 @@ import com.projectX.projectX.domain.cafe.repository.CafeBulkRepository;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.cafe.util.CSVReader;
 import com.projectX.projectX.global.common.CafeType;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +17,18 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -27,6 +41,24 @@ public class CafeService {
     private final String[] header = {"cafeId", "name", "cafeType", "address", "latitude",
         "longitude"};
 
+    @Value("${kakao.key}")
+    private String kakao_key;
+    @Value("${kakao.base-url}")
+    private String kakao_base_url;
+    @Value("${csv-root}")
+    private String root;
+
+
+    private HttpEntity<String> httpEntity;
+
+    @PostConstruct
+    protected void init() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, kakao_key);
+        httpEntity = new HttpEntity<>(headers);
+    }
+
     public void createCafeInfo() {
         String[] franchise = {"스타벅스", "투썸플레이스", "엔제리너스", "요거프레소", "이디야커피", "카페베네", "커피빈", "탐앤탐스",
             "파스쿠찌", "할리스커피", "드롭탑", "메가커피", "더리터", "봄봄", "더벤티", "커피베이", "디저트39"};
@@ -37,7 +69,7 @@ public class CafeService {
         String[] addr = {"CTPRVN_NM", "SIGNGU_NM", "LEGALDONG_NM", "LI_NM", "LNBR_NO"};
         String[] la = {"LC_LA"};
         String[] lo = {"LC_LO"};
-        String fileRoot = "C://Users/dlwns/Downloads/전국 카페 정보.csv";
+        String fileRoot = root + "전국 카페 정보.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "CTPRVN_NM", "제주특별자치도");
         List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
@@ -59,7 +91,7 @@ public class CafeService {
         String[] addr = {"FCLTY_ROAD_NM_ADDR"};
         String[] la = {"FCLTY_LA"};
         String[] lo = {"FCLTY_LO"};
-        String fileRoot = "C://Users/dlwns/Downloads/전국 북카페 정보.csv";
+        String fileRoot = root + "전국 북카페 정보.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "FCLTY_ROAD_NM_ADDR", "제주");
         List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
@@ -86,14 +118,57 @@ public class CafeService {
         for (Map<String, String> map : mapList) {
             Map<String, String> tmpMap = new HashMap<>();
 
-            for (int i = 0; i < convertHeader.size(); ++i) {
-                String str = combineString(convertHeader.get(i), map);
-                tmpMap.put(header[i], str);
-            }
-            returnList.add(tmpMap);
-        }
+            String cafeName = combineString(convertHeader.get(1), map);
 
+            if (isPlaceExist(cafeName)) {
+                for (int i = 0; i < convertHeader.size(); ++i) {
+                    String str = combineString(convertHeader.get(i), map);
+                    tmpMap.put(header[i], str);
+                }
+                tmpMap.put("uri", getPlaceURI(cafeName));
+                returnList.add(tmpMap);
+            }
+        }
         return exceptTargetInfo(returnList, excepts, "cafeType");
+    }
+
+    public boolean isPlaceExist(String name) {
+        URI checkURI = UriComponentsBuilder.fromHttpUrl(kakao_base_url)
+            .queryParam("query", name)
+            .queryParam("page", 1)
+            .queryParam("category_group_code", "CE7")
+            .encode(StandardCharsets.UTF_8)
+            .build().toUri();
+
+        Assert.notNull(name, "query");
+        ResponseEntity<String> cafeResponse = new RestTemplate().exchange(checkURI, HttpMethod.GET,
+            httpEntity, String.class);
+
+        JSONObject jsonObject = new JSONObject(cafeResponse.getBody().toString());
+        JSONArray jsonArray = jsonObject.getJSONArray("documents");
+        if (jsonArray.length() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public String getPlaceURI(String name) {
+        URI cafeURI = UriComponentsBuilder.fromHttpUrl(kakao_base_url)
+            .queryParam("query", name)
+            .queryParam("page", 1)
+            .encode(StandardCharsets.UTF_8)
+            .build().toUri();
+
+        Assert.notNull(name, "query");
+        ResponseEntity<String> cafeResponse = new RestTemplate().exchange(cafeURI, HttpMethod.GET,
+            httpEntity, String.class);
+
+        JSONObject jsonObject = new JSONObject(cafeResponse.getBody().toString());
+        JSONArray jsonArray = jsonObject.getJSONArray("documents");
+
+        JSONObject targetObject = jsonArray.getJSONObject(0);
+        String uri = targetObject.getString("place_url");
+        return uri;
     }
 
     private String combineString(String[] targets, Map<String, String> map) {
