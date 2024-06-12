@@ -2,6 +2,7 @@ package com.projectX.projectX.domain.cafe.entity;
 
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.CafeType;
+import com.projectX.projectX.global.common.JejuRegion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -49,9 +50,16 @@ public class Cafe extends BaseEntity {
     @Comment("카페 URI")
     private String uri;
 
+    @Enumerated(EnumType.STRING)
+    @Comment("제주도 지역 구분")
+    private JejuRegion jejuRegion;
+
+    @Comment("전화번호")
+    private String phoneNumber;
+
     @Builder
     public Cafe(Long id, String name, CafeType cafeType, String address, double latitude,
-        double longitude, String uri) {
+        double longitude, String uri, JejuRegion jejuRegion, String phoneNumber) {
         this.id = id;
         this.name = name;
         this.cafeType = cafeType;
@@ -59,5 +67,7 @@ public class Cafe extends BaseEntity {
         this.latitude = latitude;
         this.longitude = longitude;
         this.uri = uri;
+        this.jejuRegion = jejuRegion;
+        this.phoneNumber = phoneNumber;
     }
 }
