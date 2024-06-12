@@ -1,5 +1,6 @@
 package com.projectX.projectX.domain.cafe.repository;
 
+import com.projectX.projectX.global.common.JejuRegion;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -21,9 +22,9 @@ public class CafeBulkRepository {
     @Transactional
     public void saveCafe(List<Map<String, String>> cafes) {
         String sql =
-            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at, cafe_id, uri)"
+            "INSERT INTO cafe (name, cafe_type, address, latitude, longitude, created_at, cafe_id, uri, jeju_region, phone_number)"
                 +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql,
             new BatchPreparedStatementSetter() {
@@ -37,6 +38,10 @@ public class CafeBulkRepository {
                     ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
                     ps.setString(7, cafes.get(i).get("cafeId"));
                     ps.setString(8, cafes.get(i).get("uri"));
+                    ps.setObject(9,
+                        JejuRegion.fromInt(Integer.parseInt(cafes.get(i).get("jejuRegion")))
+                            .name());
+                    ps.setString(10, cafes.get(i).get("phoneNumber"));
                 }
 
                 @Override
@@ -51,7 +56,7 @@ public class CafeBulkRepository {
     @Transactional
     public void updateCafe(List<Map<String, String>> cafes) {
         String sql =
-            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, updated_at = ?, cafe_id = ?, uri = ? "
+            "UPDATE cafe SET name = ?, cafe_type = ?, address = ?, latitude = ?, longitude = ?, updated_at = ?, cafe_id = ?, uri = ?, jeju_region = ?, phone_number = ? "
                 +
                 "WHERE id = ?";
 
@@ -67,7 +72,10 @@ public class CafeBulkRepository {
                     ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
                     ps.setString(7, cafes.get(i).get("cafeId"));
                     ps.setString(8, cafes.get(i).get("uri"));
-                    ps.setLong(9, Long.parseLong(
+                    ps.setObject(9,
+                        JejuRegion.fromInt(Integer.parseInt(cafes.get(i).get("jejuRegion"))));
+                    ps.setString(10, cafes.get(i).get("phoneNumber"));
+                    ps.setLong(11, Long.parseLong(
                         cafes.get(i).get("id"))); // assuming 'id' is provided for each cafe
 
                 }
