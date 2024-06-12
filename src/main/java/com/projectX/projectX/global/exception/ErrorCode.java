@@ -31,7 +31,8 @@ public enum ErrorCode {
 
     //Page
     NO_MORE_PAGE(HttpStatus.BAD_REQUEST, "더이상 페이지가 존재하지 않습니다."),
-    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다.");;//Error Code를 작성한 마지막에 ;를 추가합니다.
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다.")
+    ;//Error Code를 작성한 마지막에 ;를 추가합니다.
 
     private final HttpStatus httpStatus;
     private final String simpleMessage;
