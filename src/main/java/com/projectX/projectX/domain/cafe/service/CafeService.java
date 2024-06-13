@@ -5,6 +5,7 @@ import com.projectX.projectX.domain.cafe.repository.CafeBulkRepository;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.cafe.util.CSVReader;
 import com.projectX.projectX.global.common.CafeType;
+import com.projectX.projectX.global.common.CommonService;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.net.URI;
@@ -38,6 +39,7 @@ public class CafeService {
     private final CafeBulkRepository cafeBulkRepository;
     private final CafeRepository cafeRepository;
     private final LibraryService libraryService;
+    private final CommonService commonService;
     private final String[] header = {"cafeId", "name", "cafeType", "address", "latitude",
         "longitude"};
 
@@ -123,9 +125,13 @@ public class CafeService {
             if (isPlaceExist(cafeName)) {
                 for (int i = 0; i < convertHeader.size(); ++i) {
                     String str = combineString(convertHeader.get(i), map);
+                    if (i == 3) {
+                        tmpMap.put("jejuRegion", commonService.findJejuRegion(str));
+                    }
                     tmpMap.put(header[i], str);
                 }
-                tmpMap.put("uri", getPlaceURI(cafeName));
+                tmpMap.put("uri", getAttributeFromKakao(cafeName, "place_url"));
+                tmpMap.put("phoneNumber", getAttributeFromKakao(cafeName, "phone"));
                 returnList.add(tmpMap);
             }
         }
@@ -152,7 +158,7 @@ public class CafeService {
         return false;
     }
 
-    public String getPlaceURI(String name) {
+    private String getAttributeFromKakao(String name, String key) {
         URI cafeURI = UriComponentsBuilder.fromHttpUrl(kakao_base_url)
             .queryParam("query", name)
             .queryParam("page", 1)
@@ -167,8 +173,8 @@ public class CafeService {
         JSONArray jsonArray = jsonObject.getJSONArray("documents");
 
         JSONObject targetObject = jsonArray.getJSONObject(0);
-        String uri = targetObject.getString("place_url");
-        return uri;
+        String attribute = targetObject.getString(key);
+        return attribute;
     }
 
     private String combineString(String[] targets, Map<String, String> map) {

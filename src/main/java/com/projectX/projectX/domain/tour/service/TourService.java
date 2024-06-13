@@ -9,6 +9,7 @@ import com.projectX.projectX.domain.tour.repository.ImpairmentRepository;
 import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
 import com.projectX.projectX.domain.tour.util.TourMapper;
+import com.projectX.projectX.global.common.CommonService;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class TourService {
     private final ImpairmentRepository impairmentRepository;
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
+    private final CommonService commonService;
 
     private static JSONParser jsonParser;
     private static StringBuffer result;
@@ -86,7 +88,7 @@ public class TourService {
                     }
                 }
 
-                String num = findJejuRegion(tourMap.get("address"));
+                String num = commonService.findJejuRegion(tourMap.get("address"));
                 tourMap.put(tourkeys[tourkeys.length - 1], num);
 
                 tourRepository.save(TourMapper.toTour(tourMap));
@@ -100,25 +102,6 @@ public class TourService {
         }
     }
 
-    private static String findJejuRegion(String value) {
-        if (value.contains("제주시")) {
-            if (value.contains("구좌읍") || value.contains("조천읍")) {
-                return "2";
-            } else if (value.contains("애월읍") || value.contains("한림읍") || value.contains("한경읍")) {
-                return "6";
-            }
-            return "1";
-        } else if (value.contains("서귀포시")) {
-            if (value.contains("대정읍") || value.contains("안덕면")) {
-                return "5";
-            } else if (value.contains("남원읍") || value.contains("표선면") || value.contains("성산읍")) {
-                return "3";
-            }
-            return "4";
-        }
-
-        throw new NotFoundJejuRegionException(ErrorCode.JEJU_REGION_NOT_FOUND);
-    }
 
     private List<Long> createContentIdList() {
         List<Tour> entireTourList = tourRepository.findAll();
