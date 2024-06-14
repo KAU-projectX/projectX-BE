@@ -11,14 +11,12 @@ public class MemberMapper {
 
     public static Member toMember(MemberSignUpRequest memberSignUpRequest) {
         return Member.builder()
-            .userPassword(memberSignUpRequest.userPassword())
             .userNickName(memberSignUpRequest.userNickName())
             .build();
     }
 
     public static MemberSignUpResponse toMemberSignUpResponse(Member member) {
         return MemberSignUpResponse.builder()
-            .userPassword(member.getUserPassword())
             .userNickName(member.getUserNickName())
             .build();
     }
