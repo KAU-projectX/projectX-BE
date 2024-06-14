@@ -8,6 +8,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,7 +18,8 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().contains("token/") || request.getRequestURI().contains("v1/cafe");
+        return request.getRequestURI().contains("token/") || request.getRequestURI()
+            .contains("v1/cafe") || request.getRequestURI().contains("v1/tour");
     }
 
     @Override
@@ -25,11 +27,16 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (Exception e){
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("JWT Token에 문제가 발생했습니다.");
+        } catch (JwtException e) {
+            setErrorResponse(request, response, e);
         }
+    }
+
+    private void setErrorResponse(HttpServletRequest request, HttpServletResponse response,
+        Throwable throwable) throws IOException {
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(throwable.getMessage());
     }
 }
