@@ -5,7 +5,8 @@ import lombok.Builder;
 public record SecurityUser(
     String email,
     String nickname,
-    String role
+    String role,
+    String providerType
 ) {
 
     @Builder

@@ -24,12 +24,13 @@ public class SecurityConfig {
     private final OAuthAuthenticationFailureHandler failureHandler;
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final CorsConfig corsConfig;
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf((csrf) -> csrf.disable()) //csrf 비활성화
-            .cors((cors) -> cors.disable()) //cors 비활성화
+            .cors((cors) -> corsConfig.corsConfigurationSource()) //cors 비활성화
             .formLogin((formLogin) -> formLogin.disable()) //form 로그인 비활성화
             .sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션사용 x

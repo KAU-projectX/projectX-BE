@@ -1,5 +1,6 @@
 package com.projectX.projectX.global.security.handler;
 
+import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import com.projectX.projectX.global.security.dto.GeneratedToken;
 import com.projectX.projectX.global.security.util.JwtUtil;
 import jakarta.servlet.ServletException;
@@ -10,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -21,22 +21,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
-    private static final String KAKAO_URI = "http://localhost:3000/login";
+    private static final String LOGIN_REDIRECT_URI = "http://woravel.com/login/callback";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
 
         //1. oAuth2User로 캐스팅하여 인증된 사용자의 정보를 가져온다.
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         //2. oAuth2User의 정보들을 가져온다.
-        String email = oAuth2User.getAttribute("email");
+        String email = customOAuth2User.getEmail();
 
-        String provider = oAuth2User.getAttribute("provider");
+        String provider = customOAuth2User.getProvider();
 
         //3. 로그인한 회원 존재의 여부를 가져온다.
-        String role = oAuth2User.getAuthorities().stream()
+        String role = customOAuth2User.getAuthorities().stream()
             .findFirst()
             .orElseThrow(IllegalAccessError::new)
             .getAuthority();
@@ -46,7 +46,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         switch (provider) {
             case "kakao":
-                String kakaoRedirectUrl = UriComponentsBuilder.fromUriString(KAKAO_URI)
+                String kakaoRedirectUrl = UriComponentsBuilder.fromUriString(LOGIN_REDIRECT_URI)
                     .queryParam("accessToken", generatedToken.accessToken())
                     .build()
                     .encode(StandardCharsets.UTF_8)

@@ -4,6 +4,7 @@ import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.global.exception.ErrorCode;
+import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import com.projectX.projectX.global.security.dto.SecurityUser;
 import com.projectX.projectX.global.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -29,7 +30,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().contains("token/") || request.getRequestURI().contains("v1/cafe");
+        return request.getRequestURI().contains("token/") || request.getRequestURI()
+            .contains("v1/cafe") || request.getRequestURI().contains("v1/tour");
     }
 
     @Override
@@ -51,12 +53,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             //4. SecurityContext에 등록할 User 객체 생성
             SecurityUser securityUser = SecurityUser.builder()
                 .email(findMember.getUserEmail())
-                .role(findMember.getUserRole().toString())
                 .nickname(findMember.getUserNickName())
+                .role(findMember.getUserRole().toString())
+                .providerType(findMember.getProviderType().toString())
                 .build();
 
+            CustomOAuth2User customOAuth2User = new CustomOAuth2User(securityUser);
+
             //5. SecurityContext에 인증 객체 등록
-            Authentication authentication = jwtUtil.getAuthentication(securityUser);
+            Authentication authentication = jwtUtil.getAuthentication(customOAuth2User);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             throw new JwtException(ErrorCode.EXPIRED_TOKEN.getSimpleMessage());

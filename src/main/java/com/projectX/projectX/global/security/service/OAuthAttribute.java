@@ -1,6 +1,7 @@
 package com.projectX.projectX.global.security.service;
 
 import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.member.entity.ProviderType;
 import com.projectX.projectX.domain.member.entity.RoleType;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class OAuthAttribute {
         return Member.builder()
             .userNickName(nickname)
             .userEmail(email)
+            .providerType(ProviderType.toProviderType(provider))
             .userRole(RoleType.USER)
             .build();
     }
