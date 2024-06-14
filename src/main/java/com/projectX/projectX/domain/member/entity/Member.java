@@ -28,36 +28,34 @@ public class Member extends BaseEntity {
     @Comment("회원 이메일")
     private String userEmail;
 
-    @Column(length = 15)
-    @Comment("회원 비밀번호")
-    private String userPassword;
-
     @Column(length = 15, nullable = false)
     @Comment("회원 닉네임")
     private String userNickName;
-
-    @Column(length = 25)
-    @Comment("회원 전화번호")
-    private String userPhoneNumber;
 
     @Enumerated(EnumType.STRING)
     @Comment("회원 역할")
     private RoleType userRole;
 
+    @Enumerated(EnumType.STRING)
+    @Comment("회원 외부 계정")
+    private ProviderType providerType;
+
     @Builder
-    public Member(Long id, String userEmail, String userPassword, String userNickName,
-        String userPhoneNumber, RoleType userRole) {
+    public Member(Long id, String userEmail, String userNickName, RoleType userRole,
+        ProviderType providerType) {
         this.id = id;
         this.userEmail = userEmail;
-        this.userPassword = userPassword;
         this.userNickName = userNickName;
-        this.userPhoneNumber = userPhoneNumber;
         this.userRole = userRole;
+        this.providerType = providerType;
     }
 
-    public Member update(String userNickName, String userEmail) {
+    public Member update(String userNickName, String userEmail, ProviderType providerType,
+        RoleType userRole) {
         this.userNickName = userNickName;
         this.userEmail = userEmail;
+        this.providerType = providerType;
+        this.userRole = userRole;
         return this;
     }
 }
