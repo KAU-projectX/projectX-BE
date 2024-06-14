@@ -21,7 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
-    private static final String KAKAO_URI = "http://localhost:3000/login";
+    private static final String LOGIN_REDIRECT_URI = "http://woravel.com/login/callback";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -46,7 +46,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         switch (provider) {
             case "kakao":
-                String kakaoRedirectUrl = UriComponentsBuilder.fromUriString(KAKAO_URI)
+                String kakaoRedirectUrl = UriComponentsBuilder.fromUriString(LOGIN_REDIRECT_URI)
                     .queryParam("accessToken", generatedToken.accessToken())
                     .build()
                     .encode(StandardCharsets.UTF_8)
