@@ -25,7 +25,15 @@ public enum ErrorCode {
     INVALID_PROTOCOL_EXCEPTION(HttpStatus.BAD_REQUEST, "유효하지 않은 프로토콜 요청입니다."),
     UNSUPPORTED_ENCODING_EXCEPTION(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 인코딩입니다."),
     CANNOT_PARSE_JSON_EXCEPTION(HttpStatus.NOT_ACCEPTABLE,
-        "json을 parse할 수 없습니다.");//Error Code를 작성한 마지막에 ;를 추가합니다.
+        "json을 parse할 수 없습니다."),
+
+    //Work
+    WORK_NOT_FOUND(HttpStatus.NOT_FOUND, "work 정보를 찾을 수 없습니다."),
+
+    //Page
+    NO_MORE_PAGE(HttpStatus.BAD_REQUEST, "더이상 페이지가 존재하지 않습니다."),
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이지입니다.")
+    ;//Error Code를 작성한 마지막에 ;를 추가합니다.
 
     private final HttpStatus httpStatus;
     private final String simpleMessage;
