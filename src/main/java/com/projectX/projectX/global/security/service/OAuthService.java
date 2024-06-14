@@ -1,16 +1,17 @@
 package com.projectX.projectX.global.security.service;
 
 import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.member.entity.ProviderType;
+import com.projectX.projectX.domain.member.entity.RoleType;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
-import java.util.Collections;
+import com.projectX.projectX.global.security.dto.CustomOAuth2User;
+import com.projectX.projectX.global.security.dto.SecurityUser;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -46,19 +47,22 @@ public class OAuthService extends DefaultOAuth2UserService {
         //5. oAuth2Attribute의 속성 값들을 map으로 반환받는다.
         Map<String, Object> memberAttribute = oAuth2Attribute.convertToMap();
 
-        //6-1. 회원 save 또는 update
-        Member member = saveOrUpdate(oAuth2Attribute);
+        String email = (String) memberAttribute.get("email");
+        String nickname = (String) memberAttribute.get("nickname");
+        String provider = (String) memberAttribute.get("provider");
 
-        return new DefaultOAuth2User(
-            Collections.singleton(
-                new SimpleGrantedAuthority(member.getUserRole().toString())),
-            memberAttribute, "email"); //nameAttributeKey : OAuth2 로그인 진행시 키가 되는 필드값 (PK)
+        //6. 회원 save 또는 update
+        saveOrUpdate(oAuth2Attribute);
+
+        SecurityUser securityUser = new SecurityUser(email, nickname, "ROLE_USER", provider);
+        return new CustomOAuth2User(securityUser);
     }
 
     private Member saveOrUpdate(OAuthAttribute oAuth2Attribute) {
         Member member = memberRepository.findByUserEmail(oAuth2Attribute.getEmail())
             // 회원 정보 업데이트
-            .map(entity -> entity.update(oAuth2Attribute.getNickname(), oAuth2Attribute.getEmail()))
+            .map(entity -> entity.update(oAuth2Attribute.getNickname(), oAuth2Attribute.getEmail(),
+                ProviderType.toProviderType(oAuth2Attribute.getProvider()), RoleType.USER))
             // 가입되지 않은 사용자 => Member Entity 생성
             .orElse(oAuth2Attribute.toEntity());
         return memberRepository.save(member);
