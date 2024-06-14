@@ -2,8 +2,8 @@ package com.projectX.projectX.global.security.util;
 
 import com.projectX.projectX.domain.member.service.MemberService;
 import com.projectX.projectX.global.exception.ErrorCode;
+import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import com.projectX.projectX.global.security.dto.GeneratedToken;
-import com.projectX.projectX.global.security.dto.SecurityUser;
 import com.projectX.projectX.global.security.exception.AccessDeniedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,12 +13,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,7 +36,7 @@ public class JwtUtil {
     public GeneratedToken generateToken(String email, String role) {
         String accessToken = generateAccessToken(email, role);
         String refreshToken = generateRefreshToken(email, role);
-        memberService.saveTokenInfo(email,accessToken,refreshToken);
+        memberService.saveTokenInfo(email, accessToken, refreshToken);
         return new GeneratedToken(accessToken, refreshToken);
     }
 
@@ -82,10 +80,9 @@ public class JwtUtil {
         }
     }
 
-    public Authentication getAuthentication(SecurityUser securityUser) {
-        return new UsernamePasswordAuthenticationToken(securityUser, "",
-            List.of(new SimpleGrantedAuthority(
-                securityUser.role())));
+    public Authentication getAuthentication(CustomOAuth2User customOAuth2User) {
+        return new UsernamePasswordAuthenticationToken(customOAuth2User, "",
+            customOAuth2User.getAuthorities());
     }
 
     public String getEmail(String token) {
