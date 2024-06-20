@@ -50,4 +50,12 @@ public class TourRestController {
         return ResponseDTO.res("관광지 상세 정보를 성공적으로 저장했습니다.");
     }
 
+    @GetMapping("/create/detailCommon/kakao")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "관광지 추가정보 생성 API", description = "kakaoMap API 를 통해 관광지 추가정보를 디비에 저장하는 api 입니다.")
+    public ResponseDTO<Void> createDetailCommonByKakao() {
+        tourService.rotateForEmptyContentIdDetail();
+        return ResponseDTO.res("관광지 추가 정보를 성공적으로 저장했습니다.");
+    }
+
 }
