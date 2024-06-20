@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    // MEMBER
+    //MEMBER
     ALREADY_EXIST_ID_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 사용중인 아이디입니다."),
     INVALID_PASSWORD_EXCEPTION(HttpStatus.BAD_REQUEST, "비밀번호는 아이디와 같을 수 없습니다."),
     INVALID_MEMBER_EXCEPTION(HttpStatus.BAD_REQUEST, "해당하는 회원이 존재하지 않습니다."),
@@ -29,6 +29,9 @@ public enum ErrorCode {
 
     //Work
     WORK_NOT_FOUND(HttpStatus.NOT_FOUND, "work 정보를 찾을 수 없습니다."),
+
+    //Travel
+    TRAVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "travel 정보를 찾을 수 없습니다."),
 
     //Page
     NO_MORE_PAGE(HttpStatus.BAD_REQUEST, "더이상 페이지가 존재하지 않습니다."),
