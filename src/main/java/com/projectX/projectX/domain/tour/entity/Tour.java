@@ -10,6 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -76,10 +79,16 @@ public class Tour extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String overview;
 
+    @OneToMany(mappedBy = "tour")
+    private List<TourImage> tourImageList = new ArrayList<>();
+
+    @Comment("카카오맵 URL")
+    private String kakaoMapUrl;
+
     @Builder
     public Tour(Long id, String address, String spec_address, Long zipCode, Long contentId,
         ContentType contentType, JejuRegion jejuRegion, String imageUrl, float mapX, float mapY,
-        String title, String phone, String homepageUrl, String overview) {
+        String title, String phone, String homepageUrl, String overview, String kakaoMapUrl) {
         this.id = id;
         this.address = address;
         this.spec_address = spec_address;
@@ -94,10 +103,19 @@ public class Tour extends BaseEntity {
         this.phone = phone;
         this.homepageUrl = homepageUrl;
         this.overview = overview;
+        this.kakaoMapUrl = kakaoMapUrl;
     }
 
     public void updateHomePageAndOverview(String homepage, String overview) {
         this.homepageUrl = homepage;
         this.overview = overview;
+    }
+
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void updateKakaoMapUrl(String kakaoMapUrl){
+        this.kakaoMapUrl = kakaoMapUrl;
     }
 }

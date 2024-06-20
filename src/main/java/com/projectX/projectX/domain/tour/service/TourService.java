@@ -4,19 +4,21 @@ import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.tour.exception.ContentIdNotFoundException;
 import com.projectX.projectX.domain.tour.exception.InvalidRequestException;
 import com.projectX.projectX.domain.tour.exception.InvalidURIException;
-import com.projectX.projectX.domain.tour.exception.NotFoundJejuRegionException;
 import com.projectX.projectX.domain.tour.repository.ImpairmentRepository;
 import com.projectX.projectX.domain.tour.repository.TourImageRepository;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
 import com.projectX.projectX.domain.tour.util.TourMapper;
 import com.projectX.projectX.global.common.CommonService;
 import com.projectX.projectX.global.exception.ErrorCode;
+import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +29,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -48,8 +60,24 @@ public class TourService {
     @Value("${tour-api.base-url}")
     private String base_url;
 
+    @Value("${kakao.key}")
+    private String kakao_key;
+    @Value("${kakao.base-url}")
+    private String kakao_base_url;
+
     private final String postfix = "&_type=json&MobileOS=ETC&MobileApp=AppTest";
 
+    private HttpEntity<String> httpEntity;
+
+    @PostConstruct
+    protected void init() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, kakao_key);
+        httpEntity = new HttpEntity<>(headers);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createTour() {
         String uri = base_url + "areaBasedList1?"
             + "serviceKey=" + service_key
@@ -196,6 +224,7 @@ public class TourService {
         return false;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void rotateForTourImage() {
         List<Long> contentIdList = createContentIdList();
         for (Long contentId : contentIdList) {
@@ -245,6 +274,7 @@ public class TourService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void rotateForEveryContentIdDetail() {
         List<Tour> entireTourList = tourRepository.findAll();
         List<Long> contentIdList = new ArrayList<>();
@@ -309,6 +339,45 @@ public class TourService {
             throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
         } catch (Exception e) {
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void rotateForEmptyContentIdDetail() {
+        List<Tour> entireTourList = tourRepository.findAll();
+        List<Tour> emptyPhoneContentIdList = new ArrayList<>();
+        for (Tour tour : entireTourList) {
+            if (tour.getPhone() == null || tour.getPhone().isEmpty()) {
+                emptyPhoneContentIdList.add(tour);
+            }
+            tour.updateKakaoMapUrl(getAttributeFromKakao(tour.getTitle(), "place_url"));
+        }
+
+        for (Tour emptyPhoneTour : emptyPhoneContentIdList) {
+            emptyPhoneTour.updatePhone(getAttributeFromKakao(emptyPhoneTour.getTitle(), "phone"));
+        }
+    }
+
+    private String getAttributeFromKakao(String name, String key) {
+        URI tourURI = UriComponentsBuilder.fromHttpUrl(kakao_base_url)
+            .queryParam("query", name)
+            .queryParam("page", 1)
+            .encode(StandardCharsets.UTF_8)
+            .build().toUri();
+
+        Assert.notNull(name, "query");
+        ResponseEntity<String> tourResponse = new RestTemplate().exchange(tourURI, HttpMethod.GET,
+            httpEntity, String.class);
+
+        org.json.JSONObject jsonObject = new org.json.JSONObject(tourResponse.getBody().toString());
+        org.json.JSONArray jsonArray = jsonObject.getJSONArray("documents");
+
+        if (!jsonArray.isEmpty()) {
+            org.json.JSONObject targetObject = jsonArray.getJSONObject(0);
+            String attribute = targetObject.getString(key);
+            return attribute;
+        } else {
+            return null;
         }
     }
 
