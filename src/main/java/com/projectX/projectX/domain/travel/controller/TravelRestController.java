@@ -31,9 +31,9 @@ public class TravelRestController {
         @RequestParam @NotNull Integer contentType,
         @RequestParam(required = false) Integer jejuRegion
     ) {
-        List<TravelGetAllResponse> cafeList = travelService.getAllTravelInfo(page, contentType,
+        List<TravelGetAllResponse> travelList = travelService.getAllTravelInfo(page, contentType,
             jejuRegion);
-        return ResponseDTO.res(cafeList, "travel 전체 조회에 성공했습니다.");
+        return ResponseDTO.res(travelList, "travel 전체 조회에 성공했습니다.");
     }
 
 }
