@@ -6,6 +6,7 @@ import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.cafe.util.HttpUtil;
 import com.projectX.projectX.domain.cafe.util.JsonUtil;
 import com.projectX.projectX.global.common.CafeType;
+import com.projectX.projectX.global.common.CommonService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class LibraryService {
 
     private final CafeBulkRepository cafeBulkRepository;
     private final CafeRepository cafeRepository;
+    private final CommonService commonService;
 
     @Value("${jeju-datahub.project-key}")
     private String project_key;
@@ -132,11 +134,14 @@ public class LibraryService {
 
             Optional<Cafe> optionalCafe = cafeRepository.findByNameAndAddress(name, address);
             if (optionalCafe.isEmpty()) {
+                map.put("jejuRegion", commonService.findJejuRegion(address));
                 createMapList.add(map);
                 continue;
             }
             Cafe cafe = optionalCafe.get();
             map.put("id", cafe.getId().toString());
+            map.put("jejuRegion", commonService.findJejuRegion(address));
+
             updateMapList.add(map);
         }
 
