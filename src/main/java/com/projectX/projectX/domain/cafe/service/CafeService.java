@@ -71,7 +71,7 @@ public class CafeService {
         String[] addr = {"CTPRVN_NM", "SIGNGU_NM", "LEGALDONG_NM", "LI_NM", "LNBR_NO"};
         String[] la = {"LC_LA"};
         String[] lo = {"LC_LO"};
-        String fileRoot = root + "전국카페정보.csv";
+        String fileRoot = root + "cafeInfo.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "CTPRVN_NM", "제주특별자치도");
         List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
@@ -93,7 +93,7 @@ public class CafeService {
         String[] addr = {"FCLTY_ROAD_NM_ADDR"};
         String[] la = {"FCLTY_LA"};
         String[] lo = {"FCLTY_LO"};
-        String fileRoot = root + "전국북카페정보.csv";
+        String fileRoot = root + "bookCafeInfo.csv";
 
         List<Map<String, String>> cafeList = getFromCsv(fileRoot, "FCLTY_ROAD_NM_ADDR", "제주");
         List<Map<String, String>> midCafeList = getFinalMap(cafeList, cafeId, name, cafeType, addr,
