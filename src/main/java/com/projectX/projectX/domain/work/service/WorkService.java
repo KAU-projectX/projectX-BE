@@ -3,15 +3,17 @@ package com.projectX.projectX.domain.work.service;
 import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
+import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
-import com.projectX.projectX.domain.work.util.WorkUtil;
+import com.projectX.projectX.domain.work.util.WorkMapper;
 import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -52,7 +54,7 @@ public class WorkService {
 
         List<WorkGetAllResponse> cafeList = new ArrayList<>();
         for (Cafe cafe : workPage.toList()) {
-            WorkGetAllResponse workGetAllResponse = WorkUtil.toWorkGetAllResponse(cafe);
+            WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetAllResponse(cafe);
             cafeList.add(workGetAllResponse);
         }
 
@@ -61,6 +63,18 @@ public class WorkService {
         }
 
         return cafeList;
+    }
+
+
+    public WorkGetDetailResponse getWorkDetailInfo(Long cafe_id) {
+        Optional<Cafe> cafeOptional = cafeRepository.findById(cafe_id);
+
+        if (cafeOptional.isEmpty()) {
+            throw new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND);
+        }
+        Cafe cafe = cafeOptional.get();
+
+        return WorkMapper.toWorkGetDetailResponse(cafe);
     }
 
 }
