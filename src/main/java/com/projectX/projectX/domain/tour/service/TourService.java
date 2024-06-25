@@ -126,6 +126,7 @@ public class TourService {
         } catch (MalformedURLException e) {
             throw new InvalidURIException(ErrorCode.INVALID_URI_EXCEPTION);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST_EXCEPTION);
         }
     }
