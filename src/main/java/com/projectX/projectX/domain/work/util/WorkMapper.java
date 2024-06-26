@@ -3,6 +3,7 @@ package com.projectX.projectX.domain.work.util;
 import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
+import java.util.ArrayList;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class WorkMapper {
             .name(cafe.getName())
             .address(cafe.getAddress())
             .phone(cafe.getPhoneNumber())
+            .imageUrl("")
             .build();
     }
 
@@ -29,6 +31,7 @@ public class WorkMapper {
             .longitude(cafe.getLongitude())
             .cafeType(cafe.getCafeType())
             .jejuRegion(cafe.getJejuRegion())
+            .imageUrl(new ArrayList<>())
             .build();
     }
 

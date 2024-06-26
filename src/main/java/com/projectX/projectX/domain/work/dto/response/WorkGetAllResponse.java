@@ -6,7 +6,8 @@ public record WorkGetAllResponse(
     Long id,
     String name,
     String address,
-    String phone
+    String phone,
+    String imageUrl
 ) {
 
     @Builder
