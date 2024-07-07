@@ -4,6 +4,7 @@ services:
     image: "ifyang/kau_project_x:develop"
     ports:
       - "80:8080"
+    container_name: "backend"
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -22,6 +23,19 @@ services:
       - "6379:6379"
     networks:
       - woravel-network
+  nginx:
+    image: "nginx"
+    container_name: "nginx"
+    environment:
+      - TZ=Asiz/Seoul
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/
+    restart: always
+    depends_on:
+      - backend
 
 networks:
   woravel-network:
