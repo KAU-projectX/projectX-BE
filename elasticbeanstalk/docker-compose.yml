@@ -3,7 +3,7 @@ services:
   backend:
     image: "ifyang/kau_project_x:develop"
     ports:
-      - "80:8080"
+      - "8080:8080"
     container_name: "backend"
     environment:
       REDIS_HOST: redis
