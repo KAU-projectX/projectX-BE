@@ -1,7 +1,12 @@
 package com.projectX.projectX.domain.work.service;
 
 import com.projectX.projectX.domain.cafe.entity.Cafe;
+import com.projectX.projectX.domain.cafe.entity.Scrap;
+import com.projectX.projectX.domain.cafe.entity.UserScrapCafe;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
+import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.member.exception.InvalidMemberException;
+import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Service;
 public class WorkService {
 
     private final CafeRepository cafeRepository;
+    private final MemberRepository memberRepository;
 
     public List<WorkGetAllResponse> getWorkAll(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
@@ -75,6 +81,21 @@ public class WorkService {
         Cafe cafe = cafeOptional.get();
 
         return WorkMapper.toWorkGetDetailResponse(cafe);
+    }
+
+    public String postWorkScrap(Long cafeId, String userEmail){
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
+            () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
+        );
+
+        Member member = memberRepository.findByUserEmail(userEmail).orElseThrow(
+            () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
+        );
+
+        Boolean result = cafe.updateScrap(new Scrap(new UserScrapCafe(cafe, member)));
+        cafeRepository.save(cafe);
+
+        return result ? "work 정보를 스크랩했습니다." : "work 스크랩을 취소했습니다.";
     }
 
 }
