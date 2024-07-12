@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class Cafe extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cafe_id")
     private Long id;
 
     @Comment("카페 id")
@@ -76,6 +78,7 @@ public class Cafe extends BaseEntity {
         this.uri = uri;
         this.jejuRegion = jejuRegion;
         this.phoneNumber = phoneNumber;
+        this.scraps = new ArrayList<>();
     }
 
 
