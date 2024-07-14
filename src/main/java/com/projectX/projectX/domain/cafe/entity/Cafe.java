@@ -32,7 +32,7 @@ public class Cafe extends BaseEntity {
 
     @Comment("카페 id")
     @Column(length = 100)
-    private String cafeId;
+    private String cafePersonal;
 
     @Comment("카페 이름")
     @Column(length = 100, nullable = false)
@@ -63,8 +63,8 @@ public class Cafe extends BaseEntity {
     private String phoneNumber;
 
     @Comment("user 스크랩 정보")
-    @OneToMany(mappedBy = "id.cafe", cascade = CascadeType.ALL)
-    private List<Scrap> scraps;
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserScrapCafe> scraps;
 
     @Builder
     public Cafe(Long id, String name, CafeType cafeType, String address, double latitude,
@@ -79,15 +79,5 @@ public class Cafe extends BaseEntity {
         this.jejuRegion = jejuRegion;
         this.phoneNumber = phoneNumber;
         this.scraps = new ArrayList<>();
-    }
-
-
-    public Boolean updateScrap(Scrap scrap){
-        if(this.scraps.contains(scrap)){
-            this.scraps.remove(scrap);
-            return false;
-        }
-        this.scraps.add(scrap);
-        return true;
     }
 }
