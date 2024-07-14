@@ -1,8 +1,6 @@
 package com.projectX.projectX.domain.work.service;
 
 import com.projectX.projectX.domain.cafe.entity.Cafe;
-import com.projectX.projectX.domain.cafe.entity.Scrap;
-import com.projectX.projectX.domain.cafe.entity.UserScrapCafe;
 import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
@@ -25,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -83,7 +82,8 @@ public class WorkService {
         return WorkMapper.toWorkGetDetailResponse(cafe);
     }
 
-    public String postWorkScrap(Long cafeId, String userEmail){
+    @Transactional
+    public String postWorkScrap(Long cafeId, String userEmail) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
             () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
         );
@@ -92,7 +92,7 @@ public class WorkService {
             () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
         );
 
-        Boolean result = cafe.updateScrap(new Scrap(new UserScrapCafe(cafe, member)));
+        Boolean result = cafe.updateScrap(cafe, member);
         cafeRepository.save(cafe);
 
         return result ? "work 정보를 스크랩했습니다." : "work 스크랩을 취소했습니다.";

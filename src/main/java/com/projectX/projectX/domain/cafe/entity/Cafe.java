@@ -1,5 +1,6 @@
 package com.projectX.projectX.domain.cafe.entity;
 
+import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -79,5 +81,24 @@ public class Cafe extends BaseEntity {
         this.jejuRegion = jejuRegion;
         this.phoneNumber = phoneNumber;
         this.scraps = new ArrayList<>();
+    }
+
+    public Boolean updateScrap(Cafe cafe, Member member) {
+        UserScrapCafe forRemove = null;
+        for (UserScrapCafe scrap : this.scraps) {
+            if (Objects.equals(scrap.getCafe(), cafe) && Objects.equals(scrap.getMember(),
+                member)) {
+                forRemove = scrap;
+                break;
+            }
+        }
+
+        if (Objects.nonNull(forRemove)) {
+            this.scraps.remove(forRemove);
+            return false;
+        }
+
+        this.scraps.add(UserScrapCafe.builder().cafe(cafe).member(member).build());
+        return true;
     }
 }
