@@ -1,8 +1,10 @@
 package com.projectX.projectX.domain.cafe.entity;
 
+import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +12,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +29,12 @@ public class Cafe extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cafe_id")
     private Long id;
 
     @Comment("카페 id")
     @Column(length = 100)
-    private String cafeId;
+    private String cafePersonal;
 
     @Comment("카페 이름")
     @Column(length = 100, nullable = false)
@@ -57,6 +64,10 @@ public class Cafe extends BaseEntity {
     @Comment("전화번호")
     private String phoneNumber;
 
+    @Comment("user 스크랩 정보")
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserScrapCafe> scraps;
+
     @Builder
     public Cafe(Long id, String name, CafeType cafeType, String address, double latitude,
         double longitude, String uri, JejuRegion jejuRegion, String phoneNumber) {
@@ -69,5 +80,25 @@ public class Cafe extends BaseEntity {
         this.uri = uri;
         this.jejuRegion = jejuRegion;
         this.phoneNumber = phoneNumber;
+        this.scraps = new ArrayList<>();
+    }
+
+    public Boolean updateScrap(Cafe cafe, Member member) {
+        UserScrapCafe forRemove = null;
+        for (UserScrapCafe scrap : this.scraps) {
+            if (Objects.equals(scrap.getCafe(), cafe) && Objects.equals(scrap.getMember(),
+                member)) {
+                forRemove = scrap;
+                break;
+            }
+        }
+
+        if (Objects.nonNull(forRemove)) {
+            this.scraps.remove(forRemove);
+            return false;
+        }
+
+        this.scraps.add(UserScrapCafe.builder().cafe(cafe).member(member).build());
+        return true;
     }
 }

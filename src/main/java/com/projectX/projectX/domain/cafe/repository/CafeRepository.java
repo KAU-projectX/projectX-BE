@@ -12,7 +12,7 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
 
     Optional<Cafe> findByNameAndAddress(String name, String Address);
 
-    Optional<Cafe> findByCafeId(String cafeId);
+    Optional<Cafe> findByCafePersonal(String cafePersonal);
 
     Page<Cafe> findByCafeType(CafeType cafeType, Pageable pageable);
 

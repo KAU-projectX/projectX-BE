@@ -245,7 +245,7 @@ public class CafeService {
         for (Map<String, String> map : mapList) {
             String cafeId = map.get("cafeId");
 
-            Optional<Cafe> optionalCafe = cafeRepository.findByCafeId(cafeId);
+            Optional<Cafe> optionalCafe = cafeRepository.findByCafePersonal(cafeId);
             if (optionalCafe.isEmpty()) {
                 createMapList.add(map);
                 continue;
