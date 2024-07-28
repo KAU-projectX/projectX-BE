@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class TourReviewImage extends BaseEntity {
     private String image;
 
     @ManyToOne
+    @JoinColumn(name = "tour_review_id")
     @Comment("투어 리뷰 id")
     private TourReview tourReview;
 

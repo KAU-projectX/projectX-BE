@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
@@ -38,10 +39,12 @@ public class CafeReview extends BaseEntity {
     private Float score;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
     @Comment("유저 id")
     private Member user;
 
     @ManyToOne
+    @JoinColumn(name = "cafe_id")
     @Comment("카페 id")
     private Cafe cafe;
 

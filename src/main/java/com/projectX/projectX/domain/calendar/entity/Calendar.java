@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,6 +52,7 @@ public class Calendar extends BaseEntity {
     private String memo;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
     @Comment("유저 id")
     private Member user;
 
