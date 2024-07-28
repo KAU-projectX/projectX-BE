@@ -48,7 +48,7 @@ public class CafeReview extends BaseEntity {
     @Comment("카페 id")
     private Cafe cafe;
 
-    @OneToMany(mappedBy = "CafeReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cafeReview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CafeReviewImage> cafeReviewImages;
 
     @Builder

@@ -48,7 +48,7 @@ public class TourReview extends BaseEntity {
     private Tour tour;
 
     @Comment("tour 리뷰 이미지")
-    @OneToMany(mappedBy = "TourReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tourReview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourReviewImage> tourReviewImages;
 
     @Builder
