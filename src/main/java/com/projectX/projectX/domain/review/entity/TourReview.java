@@ -30,10 +30,11 @@ public class TourReview extends BaseEntity {
     private Long id;
 
     @Comment("리뷰 내용")
-    @Column(length = 500)
+    @Column(length = 500, nullable = false)
     private String contents;
 
     @Comment("리뷰 별점")
+    @Column(nullable = false)
     private Float score;
 
     @ManyToOne

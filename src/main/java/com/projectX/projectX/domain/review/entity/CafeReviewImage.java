@@ -24,6 +24,7 @@ public class CafeReviewImage extends BaseEntity {
     private Long id;
 
     @Comment("리뷰 이미지")
+    @Column(nullable = false)
     private String image;
 
     @ManyToOne
