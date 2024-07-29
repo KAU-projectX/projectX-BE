@@ -3,7 +3,9 @@ package com.projectX.projectX.domain.work.util;
 import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
+import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +35,16 @@ public class WorkMapper {
             .jejuRegion(cafe.getJejuRegion())
             .imageUrl(new ArrayList<>())
             .build();
+    }
+
+    public static List<WorkGetRecommdResponse> toWorkRecommendResponse(List<Cafe> cafes) {
+        List<WorkGetRecommdResponse> returnCafes = new ArrayList<>();
+        for (Cafe cafe : cafes) {
+            WorkGetRecommdResponse cafeRecommendResponseDto = new WorkGetRecommdResponse(
+                cafe.getId(), cafe.getName(), cafe.getAddress());
+            returnCafes.add(cafeRecommendResponseDto);
+        }
+        return returnCafes;
     }
 
 }

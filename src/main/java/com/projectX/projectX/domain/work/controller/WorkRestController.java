@@ -2,11 +2,14 @@ package com.projectX.projectX.domain.work.controller;
 
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
+import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import com.projectX.projectX.domain.work.service.WorkService;
+import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +64,18 @@ public class WorkRestController {
     ) {
         String result = workService.postWorkScrap(cafeId, user.getEmail());
         return ResponseDTO.res(result);
+    }
+
+    @GetMapping("/{cafe_id}/recommed")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
+    public ResponseDTO<?> getWorkRecommd(
+        @PathVariable("cafe_id") Long cafeId,
+        @RequestParam @NotBlank String jejuRegion
+    ) {
+        List<WorkGetRecommdResponse> recommdCafes = workService.getWorkRecommd(
+            JejuRegion.fromString(jejuRegion));
+        return ResponseDTO.res(recommdCafes, "추천 정보 조회에 성공했습니다.");
     }
 
 }
