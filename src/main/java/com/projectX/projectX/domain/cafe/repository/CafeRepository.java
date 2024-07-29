@@ -18,4 +18,9 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
 
     Page<Cafe> findByCafeTypeAndJejuRegion(CafeType cafeType, JejuRegion jejuRegion,
         Pageable pageable);
+
+    Long countByJejuRegion(JejuRegion jejuRegion);
+
+    Page<Cafe> findByJejuRegion(JejuRegion jejuRegion, Pageable pageable);
+
 }
