@@ -37,6 +37,8 @@ public class WorkService {
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
 
+    private static final int RECOMMEND_WORK_SIZE = 3;
+
     public List<WorkGetAllResponse> getWorkAll(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
         Page<Cafe> workPage;
@@ -111,7 +113,7 @@ public class WorkService {
         long minPage = 0;
         long maxPage = cafeRepository.countByJejuRegion(jejuRegion);
 
-        while (cafes.size() < 3) {
+        while (cafes.size() < RECOMMEND_WORK_SIZE) {
             long randomPage = random.nextLong(maxPage - minPage) + minPage;
             if (set.contains(randomPage)) {
                 continue;
