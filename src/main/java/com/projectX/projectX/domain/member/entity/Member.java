@@ -41,6 +41,9 @@ public class Member extends BaseEntity {
     @Comment("회원 외부 계정")
     private ProviderType providerType;
 
+    @Comment("회원 포인트")
+    private Integer point;
+
     @Builder
     public Member(Long id, String userEmail, String userNickName, RoleType userRole,
         ProviderType providerType) {
@@ -49,6 +52,7 @@ public class Member extends BaseEntity {
         this.userNickName = userNickName;
         this.userRole = userRole;
         this.providerType = providerType;
+        this.point = 0;
     }
 
     public Member update(String userNickName, String userEmail, ProviderType providerType,
