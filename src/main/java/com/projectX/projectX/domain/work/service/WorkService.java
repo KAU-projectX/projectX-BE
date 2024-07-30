@@ -7,6 +7,7 @@ import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
+import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
@@ -15,8 +16,11 @@ import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,8 @@ public class WorkService {
 
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+
+    private static final int RECOMMEND_WORK_SIZE = 3;
 
     public List<WorkGetAllResponse> getWorkAll(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
@@ -96,6 +102,30 @@ public class WorkService {
         cafeRepository.save(cafe);
 
         return result ? "work 정보를 스크랩했습니다." : "work 스크랩을 취소했습니다.";
+    }
+
+    @Transactional
+    public List<WorkGetRecommdResponse> getWorkRecommd(JejuRegion jejuRegion) {
+        Random random = new Random();
+        Set<Long> set = new HashSet<>();
+        List<Cafe> cafes = new ArrayList<>();
+
+        long minPage = 0;
+        long maxPage = cafeRepository.countByJejuRegion(jejuRegion);
+
+        while (cafes.size() < RECOMMEND_WORK_SIZE) {
+            long randomPage = random.nextLong(maxPage - minPage) + minPage;
+            if (set.contains(randomPage)) {
+                continue;
+            }
+
+            set.add(randomPage);
+            Pageable pageable = PageRequest.of((int) randomPage, 1);
+            Page<Cafe> cafe = cafeRepository.findByJejuRegion(jejuRegion, pageable);
+            cafes.add(cafe.getContent().get(0));
+        }
+
+        return WorkMapper.toWorkRecommendResponse(cafes);
     }
 
 }
