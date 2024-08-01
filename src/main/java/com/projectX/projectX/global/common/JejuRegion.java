@@ -18,11 +18,4 @@ public enum JejuRegion {
         throw new IllegalArgumentException("Invalid integer value for JEJU REGION: " + value);
     }
 
-    public static JejuRegion fromString(String name) {
-        try {
-            return JejuRegion.valueOf(name);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid integer name for JEJU REGION: " + name);
-        }
-    }
 }
