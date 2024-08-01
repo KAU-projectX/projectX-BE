@@ -37,11 +37,9 @@ public class WorkRestController {
     public ResponseDTO<?> createCafeInfo(
         @RequestParam @NotNull Integer page,
         @RequestParam @NotNull CafeType cafeType,
-        @RequestParam(required = false) JejuRegion jejuRegion,
-        @RequestParam(required = false) String franchiseName
+        @RequestParam(required = false) JejuRegion jejuRegion
     ) {
-        List<WorkGetAllResponse> cafeList = workService.getWorkAllInfo(page, cafeType, jejuRegion,
-            franchiseName);
+        List<WorkGetAllResponse> cafeList = workService.getWorkAllInfo(page, cafeType, jejuRegion);
         return ResponseDTO.res(cafeList, "work 조회에 성공했습니다.");
     }
 

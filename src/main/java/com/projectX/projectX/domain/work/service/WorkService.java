@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +38,7 @@ public class WorkService {
     private static final int RECOMMEND_WORK_SIZE = 3;
     private static final long CANNOT_RECOMMEND_CAFE = 0;
 
-    private Cafe isExistCafe(Long cafeId){
+    private Cafe isExistCafe(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
             () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
         );
@@ -48,7 +46,7 @@ public class WorkService {
         return cafe;
     }
 
-    private Member isExistMember(String userEmail){
+    private Member isExistMember(String userEmail) {
         Member member = memberRepository.findByUserEmail(userEmail).orElseThrow(
             () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
         );
@@ -57,21 +55,15 @@ public class WorkService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkGetAllResponse> getWorkAllInfo(Integer page, Integer cafeType, Integer jejuRegion,
-        String franchiseName) {
+    public List<WorkGetAllResponse> getWorkAllInfo(Integer page, CafeType cafeType,
+        JejuRegion jejuRegion) {
         Page<Cafe> workPage;
         Pageable pageable = PageRequest.of(page, 20);
 
-        if (jejuRegion == null && franchiseName == null) {
-            workPage = cafeRepository.findByCafeType(CafeType.fromInt(cafeType), pageable);
-        } else if (jejuRegion != null && franchiseName == null) {
-            workPage = cafeRepository.findByCafeTypeAndJejuRegion(CafeType.fromInt(cafeType),
-                JejuRegion.fromInt(jejuRegion), pageable);
-        } else if (jejuRegion == null && franchiseName != null) {
-            workPage = cafeRepository.findByCafeType(CafeType.FRANCHISE, pageable);
+        if (Objects.isNull(jejuRegion)) {
+            workPage = cafeRepository.findByCafeType(cafeType, pageable);
         } else {
-            workPage = cafeRepository.findByCafeTypeAndJejuRegion(CafeType.FRANCHISE,
-                JejuRegion.fromInt(jejuRegion), pageable);
+            workPage = cafeRepository.findByCafeTypeAndJejuRegion(cafeType, jejuRegion, pageable);
         }
 
         if (workPage.isEmpty()) {
@@ -81,12 +73,7 @@ public class WorkService {
             throw new InvalidPageException(ErrorCode.INVALID_PAGE);
         }
 
-        List<WorkGetAllResponse> cafeList = new ArrayList<>();
-        for (Cafe cafe : workPage.toList()) {
-            WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetAllResponse(cafe);
-            cafeList.add(workGetAllResponse);
-        }
-
+        List<WorkGetAllResponse> cafeList = WorkMapper.toWorkGetAllResponse(workPage);
         if (cafeList.isEmpty()) {
             throw new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND);
         }
