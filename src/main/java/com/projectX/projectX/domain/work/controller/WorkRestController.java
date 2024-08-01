@@ -70,7 +70,7 @@ public class WorkRestController {
     public ResponseDTO<?> getRecommendWorkInfo(
         @RequestParam JejuRegion jejuRegion
     ) {
-        return ResponseDTO.res(workService.getWorkRecommd(jejuRegion), "추천 정보 조회에 성공했습니다.");
+        return ResponseDTO.res(workService.getRecommendWorkInfo(jejuRegion), "추천 정보 조회에 성공했습니다.");
     }
 
 }

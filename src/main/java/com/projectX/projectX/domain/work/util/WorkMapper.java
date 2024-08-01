@@ -37,13 +37,14 @@ public class WorkMapper {
             .build();
     }
 
-    public static List<WorkGetRecommdResponse> toWorkRecommendResponse(List<Cafe> cafes) {
+    public static List<WorkGetRecommdResponse> toWorkGetRecommendResponse(List<Cafe> cafes) {
         List<WorkGetRecommdResponse> returnCafes = new ArrayList<>();
         for (Cafe cafe : cafes) {
             WorkGetRecommdResponse cafeRecommendResponseDto = new WorkGetRecommdResponse(
                 cafe.getId(), cafe.getName(), cafe.getAddress());
             returnCafes.add(cafeRecommendResponseDto);
         }
+
         return returnCafes;
     }
 

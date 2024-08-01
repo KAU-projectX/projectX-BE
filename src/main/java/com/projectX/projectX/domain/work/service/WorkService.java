@@ -18,6 +18,7 @@ import com.projectX.projectX.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -38,6 +39,7 @@ public class WorkService {
     private final MemberRepository memberRepository;
 
     private static final int RECOMMEND_WORK_SIZE = 3;
+    private static final long CANNOT_RECOMMEND_CAFE = 0;
 
     public List<WorkGetAllResponse> getWorkAll(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
@@ -105,16 +107,15 @@ public class WorkService {
     }
 
     @Transactional
-    public List<WorkGetRecommdResponse> getWorkRecommd(JejuRegion jejuRegion) {
+    public List<WorkGetRecommdResponse> getRecommendWorkInfo(JejuRegion jejuRegion) {
         Random random = new Random();
         Set<Long> set = new HashSet<>();
         List<Cafe> cafes = new ArrayList<>();
 
-        long minPage = 0;
         long maxPage = cafeRepository.countByJejuRegion(jejuRegion);
 
         while (cafes.size() < RECOMMEND_WORK_SIZE) {
-            long randomPage = random.nextLong(maxPage - minPage) + minPage;
+            long randomPage = random.nextLong(maxPage);
             if (set.contains(randomPage)) {
                 continue;
             }
@@ -125,7 +126,7 @@ public class WorkService {
             cafes.add(cafe.getContent().get(0));
         }
 
-        return WorkMapper.toWorkRecommendResponse(cafes);
+        return WorkMapper.toWorkGetRecommendResponse(cafes);
     }
 
 }
