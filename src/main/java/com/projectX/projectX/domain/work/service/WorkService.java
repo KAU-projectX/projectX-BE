@@ -114,6 +114,15 @@ public class WorkService {
 
         long maxPage = cafeRepository.countByJejuRegion(jejuRegion);
 
+        if (Objects.equals(maxPage, CANNOT_RECOMMEND_CAFE)) {
+            return new ArrayList<>();
+        }
+
+        if (maxPage < RECOMMEND_WORK_SIZE) {
+            List<Cafe> cafe = cafeRepository.findByJejuRegion(jejuRegion);
+            return WorkMapper.toWorkGetRecommendResponse(cafe);
+        }
+
         while (cafes.size() < RECOMMEND_WORK_SIZE) {
             long randomPage = random.nextLong(maxPage);
             if (set.contains(randomPage)) {
@@ -128,5 +137,6 @@ public class WorkService {
 
         return WorkMapper.toWorkGetRecommendResponse(cafes);
     }
+
 
 }
