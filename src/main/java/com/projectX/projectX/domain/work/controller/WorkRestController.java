@@ -2,6 +2,7 @@ package com.projectX.projectX.domain.work.controller;
 
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
+import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import com.projectX.projectX.domain.work.service.WorkService;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
@@ -70,7 +71,8 @@ public class WorkRestController {
     public ResponseDTO<?> getWorkRecommendInfo(
         @RequestParam JejuRegion jejuRegion
     ) {
-        return ResponseDTO.res(workService.getWorkRecommendInfo(jejuRegion), "추천 정보 조회에 성공했습니다.");
+        List<WorkGetRecommdResponse> result = workService.getWorkRecommendInfo(jejuRegion);
+        return ResponseDTO.res(result, "추천 정보 조회에 성공했습니다.");
     }
 
 }
