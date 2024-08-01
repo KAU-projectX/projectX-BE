@@ -47,7 +47,7 @@ public class WorkRestController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 상세 정보 get API", description = "cafe 상세 정보를 get하는 API입니다.")
     public ResponseDTO<?> getWorkDetailInfo(
-        @PathVariable @NotNull Long cafe_id
+        @PathVariable("cafe_id") @NotNull Long cafe_id
     ) {
         WorkGetDetailResponse dto = workService.getWorkDetailInfo(cafe_id);
         return ResponseDTO.res(dto, "work 상세 조회에 성공했습니다.");
@@ -57,7 +57,7 @@ public class WorkRestController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "work 스크랩 API", description = "work 게시물을 스크랩하는 API입니다.")
     public ResponseDTO<?> postWorkScrapInfo(
-        @PathVariable("cafe_id") Long cafeId,
+        @PathVariable("cafe_id") @NotNull Long cafeId,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
         String result = workService.postWorkScrapInfo(cafeId, user.getEmail());
