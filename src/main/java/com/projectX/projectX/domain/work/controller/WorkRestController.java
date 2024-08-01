@@ -64,7 +64,7 @@ public class WorkRestController {
         return ResponseDTO.res(result);
     }
 
-    @GetMapping("/recommed")
+    @GetMapping("/recommend")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
     public ResponseDTO<?> getRecommendWorkInfo(
