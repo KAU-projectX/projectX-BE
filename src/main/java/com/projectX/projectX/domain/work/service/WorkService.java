@@ -57,6 +57,7 @@ public class WorkService {
         return member;
     }
 
+    @Transactional(readOnly = true)
     public List<WorkGetAllResponse> getWorkAllInfo(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
         Page<Cafe> workPage;
@@ -95,6 +96,7 @@ public class WorkService {
     }
 
 
+    @Transactional(readOnly = true)
     public WorkGetDetailResponse getWorkDetailInfo(Long cafeId) {
         Cafe cafe = isExistCafe(cafeId);
         return WorkMapper.toWorkGetDetailResponse(cafe);
