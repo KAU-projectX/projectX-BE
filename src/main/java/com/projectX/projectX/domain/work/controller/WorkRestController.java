@@ -4,6 +4,7 @@ import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import com.projectX.projectX.domain.work.service.WorkService;
+import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
@@ -35,8 +36,8 @@ public class WorkRestController {
     @Operation(summary = "work 정보 get API", description = "work 정보를 get 하는 API입니다.")
     public ResponseDTO<?> createCafeInfo(
         @RequestParam @NotNull Integer page,
-        @RequestParam @NotNull Integer cafeType,
-        @RequestParam(required = false) Integer jejuRegion,
+        @RequestParam @NotNull CafeType cafeType,
+        @RequestParam(required = false) JejuRegion jejuRegion,
         @RequestParam(required = false) String franchiseName
     ) {
         List<WorkGetAllResponse> cafeList = workService.getWorkAllInfo(page, cafeType, jejuRegion,
