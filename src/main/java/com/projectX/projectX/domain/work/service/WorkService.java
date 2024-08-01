@@ -106,7 +106,7 @@ public class WorkService {
         return result ? "work 정보를 스크랩했습니다." : "work 스크랩을 취소했습니다.";
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<WorkGetRecommdResponse> getRecommendWorkInfo(JejuRegion jejuRegion) {
         Random random = new Random();
         Set<Long> set = new HashSet<>();
