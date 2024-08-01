@@ -56,11 +56,11 @@ public class WorkRestController {
     @PostMapping("/{cafe_id}/scrap")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "work 스크랩 API", description = "work 게시물을 스크랩하는 API입니다.")
-    public ResponseDTO<?> postWorkScrap(
+    public ResponseDTO<?> postScrapWorkInfo(
         @PathVariable("cafe_id") Long cafeId,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        String result = workService.postWorkScrap(cafeId, user.getEmail());
+        String result = workService.postScrapWorkInfo(cafeId, user.getEmail());
         return ResponseDTO.res(result);
     }
 

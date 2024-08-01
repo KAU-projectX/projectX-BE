@@ -91,7 +91,7 @@ public class WorkService {
     }
 
     @Transactional
-    public String postWorkScrap(Long cafeId, String userEmail) {
+    public String postScrapWorkInfo(Long cafeId, String userEmail) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
             () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
         );
