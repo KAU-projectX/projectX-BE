@@ -95,30 +95,17 @@ public class WorkService {
     }
 
 
-    public WorkGetDetailResponse getWorkDetailInfo(Long cafe_id) {
-        Optional<Cafe> cafeOptional = cafeRepository.findById(cafe_id);
-
-        if (cafeOptional.isEmpty()) {
-            throw new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND);
-        }
-        Cafe cafe = cafeOptional.get();
-
+    public WorkGetDetailResponse getWorkDetailInfo(Long cafeId) {
+        Cafe cafe = isExistCafe(cafeId);
         return WorkMapper.toWorkGetDetailResponse(cafe);
     }
 
     @Transactional
     public String postWorkScrapInfo(Long cafeId, String userEmail) {
-        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
-            () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
-        );
-
-        Member member = memberRepository.findByUserEmail(userEmail).orElseThrow(
-            () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
-        );
+        Cafe cafe = isExistCafe(cafeId);
+        Member member = isExistMember(userEmail);
 
         Boolean result = cafe.updateScrap(cafe, member);
-        cafeRepository.save(cafe);
-
         return result ? "work 정보를 스크랩했습니다." : "work 스크랩을 취소했습니다.";
     }
 
