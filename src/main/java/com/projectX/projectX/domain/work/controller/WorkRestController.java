@@ -66,11 +66,10 @@ public class WorkRestController {
         return ResponseDTO.res(result);
     }
 
-    @GetMapping("/{cafe_id}/recommed")
+    @GetMapping("/recommed")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
     public ResponseDTO<?> getWorkRecommd(
-        @PathVariable("cafe_id") Long cafeId,
         @RequestParam @NotBlank String jejuRegion
     ) {
         List<WorkGetRecommdResponse> recommdCafes = workService.getWorkRecommd(
