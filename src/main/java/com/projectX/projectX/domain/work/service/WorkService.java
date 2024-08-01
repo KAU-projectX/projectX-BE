@@ -41,6 +41,22 @@ public class WorkService {
     private static final int RECOMMEND_WORK_SIZE = 3;
     private static final long CANNOT_RECOMMEND_CAFE = 0;
 
+    private Cafe isExistCafe(Long cafeId){
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
+            () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
+        );
+
+        return cafe;
+    }
+
+    private Member isExistMember(String userEmail){
+        Member member = memberRepository.findByUserEmail(userEmail).orElseThrow(
+            () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
+        );
+
+        return member;
+    }
+
     public List<WorkGetAllResponse> getWorkAllInfo(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
         Page<Cafe> workPage;
