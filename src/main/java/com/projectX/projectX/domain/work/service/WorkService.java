@@ -41,7 +41,7 @@ public class WorkService {
     private static final int RECOMMEND_WORK_SIZE = 3;
     private static final long CANNOT_RECOMMEND_CAFE = 0;
 
-    public List<WorkGetAllResponse> getWorkAll(Integer page, Integer cafeType, Integer jejuRegion,
+    public List<WorkGetAllResponse> getWorkAllInfo(Integer page, Integer cafeType, Integer jejuRegion,
         String franchiseName) {
         Page<Cafe> workPage;
         Pageable pageable = PageRequest.of(page, 20);
@@ -91,7 +91,7 @@ public class WorkService {
     }
 
     @Transactional
-    public String postScrapWorkInfo(Long cafeId, String userEmail) {
+    public String postWorkScrapInfo(Long cafeId, String userEmail) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(
             () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
         );
@@ -107,7 +107,7 @@ public class WorkService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkGetRecommdResponse> getRecommendWorkInfo(JejuRegion jejuRegion) {
+    public List<WorkGetRecommdResponse> getWorkRecommendInfo(JejuRegion jejuRegion) {
         Random random = new Random();
         Set<Long> set = new HashSet<>();
         List<Cafe> cafes = new ArrayList<>();
