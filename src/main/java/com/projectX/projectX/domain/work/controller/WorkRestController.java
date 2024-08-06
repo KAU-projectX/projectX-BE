@@ -4,6 +4,7 @@ import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
 import com.projectX.projectX.domain.work.service.WorkService;
+import com.projectX.projectX.global.common.CafeType;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
@@ -36,20 +37,18 @@ public class WorkRestController {
     @Operation(summary = "work 정보 get API", description = "work 정보를 get 하는 API입니다.")
     public ResponseDTO<?> createCafeInfo(
         @RequestParam @NotNull Integer page,
-        @RequestParam @NotNull Integer cafeType,
-        @RequestParam(required = false) Integer jejuRegion,
-        @RequestParam(required = false) String franchiseName
+        @RequestParam @NotNull CafeType cafeType,
+        @RequestParam(required = false) JejuRegion jejuRegion
     ) {
-        List<WorkGetAllResponse> cafeList = workService.getWorkAll(page, cafeType, jejuRegion,
-            franchiseName);
+        List<WorkGetAllResponse> cafeList = workService.getWorkAllInfo(page, cafeType, jejuRegion);
         return ResponseDTO.res(cafeList, "work 조회에 성공했습니다.");
     }
 
     @GetMapping("/{cafe_id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "cafe 상세 정보 get API", description = "cafe 상세 정보를 get하는 API입니다.")
-    public ResponseDTO<?> getCafeDetailInfo(
-        @PathVariable @NotNull Long cafe_id
+    @Operation(summary = "work 상세 정보 get API", description = "cafe 상세 정보를 get하는 API입니다.")
+    public ResponseDTO<?> getWorkDetailInfo(
+        @PathVariable("cafe_id") @NotNull Long cafe_id
     ) {
         WorkGetDetailResponse dto = workService.getWorkDetailInfo(cafe_id);
         return ResponseDTO.res(dto, "work 상세 조회에 성공했습니다.");
@@ -58,24 +57,22 @@ public class WorkRestController {
     @PostMapping("/{cafe_id}/scrap")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "work 스크랩 API", description = "work 게시물을 스크랩하는 API입니다.")
-    public ResponseDTO<?> postWorkScrap(
-        @PathVariable("cafe_id") Long cafeId,
+    public ResponseDTO<?> postWorkScrapInfo(
+        @PathVariable("cafe_id") @NotNull Long cafeId,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        String result = workService.postWorkScrap(cafeId, user.getEmail());
+        String result = workService.postWorkScrapInfo(cafeId, user.getEmail());
         return ResponseDTO.res(result);
     }
 
-    @GetMapping("/{cafe_id}/recommed")
+    @GetMapping("/recommend")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
-    public ResponseDTO<?> getWorkRecommd(
-        @PathVariable("cafe_id") Long cafeId,
+    public ResponseDTO<?> getWorkRecommendInfo(
         @RequestParam @NotBlank String jejuRegion
     ) {
-        List<WorkGetRecommdResponse> recommdCafes = workService.getWorkRecommd(
-            JejuRegion.fromString(jejuRegion));
-        return ResponseDTO.res(recommdCafes, "추천 정보 조회에 성공했습니다.");
+        List<WorkGetRecommdResponse> result = workService.getWorkRecommendInfo(jejuRegion);
+        return ResponseDTO.res(result, "추천 정보 조회에 성공했습니다.");
     }
 
 }
