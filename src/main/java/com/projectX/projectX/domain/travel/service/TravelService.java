@@ -98,7 +98,7 @@ public class TravelService {
         Set<Long> set = new HashSet<>();
         List<Tour> tours = new ArrayList<>();
 
-        JejuRegion jejuRegion = JejuRegion.fromString(jeju);
+        JejuRegion jejuRegion = JejuRegion.findJeju(jeju);
         long maxPage = tourRepository.countByJejuRegion(jejuRegion);
         while (tours.size() < RECOMMEND_WORK_SIZE) {
             long randomPage = random.nextLong(maxPage);
