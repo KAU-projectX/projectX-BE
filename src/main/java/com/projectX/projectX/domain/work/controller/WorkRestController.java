@@ -10,6 +10,7 @@ import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +69,7 @@ public class WorkRestController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
     public ResponseDTO<?> getWorkRecommendInfo(
-        @RequestParam JejuRegion jejuRegion
+        @RequestParam @NotBlank String jejuRegion
     ) {
         List<WorkGetRecommdResponse> result = workService.getWorkRecommendInfo(jejuRegion);
         return ResponseDTO.res(result, "추천 정보 조회에 성공했습니다.");
