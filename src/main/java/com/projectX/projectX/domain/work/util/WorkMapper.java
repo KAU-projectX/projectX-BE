@@ -8,11 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkMapper {
 
-    public static WorkGetAllResponse toWorkGetAllResponse(Cafe cafe) {
+    public static List<WorkGetAllResponse> toWorkGetAllResponse(Page<Cafe> cafes) {
+        List<WorkGetAllResponse> cafeList = new ArrayList<>();
+        for (Cafe cafe : cafes) {
+            WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetResponse(cafe);
+            cafeList.add(workGetAllResponse);
+        }
+
+        return cafeList;
+    }
+
+    private static WorkGetAllResponse toWorkGetResponse(Cafe cafe) {
         return WorkGetAllResponse.builder()
             .id(cafe.getId())
             .name(cafe.getName())
@@ -37,13 +48,14 @@ public class WorkMapper {
             .build();
     }
 
-    public static List<WorkGetRecommdResponse> toWorkRecommendResponse(List<Cafe> cafes) {
+    public static List<WorkGetRecommdResponse> toWorkGetRecommendResponse(List<Cafe> cafes) {
         List<WorkGetRecommdResponse> returnCafes = new ArrayList<>();
         for (Cafe cafe : cafes) {
             WorkGetRecommdResponse cafeRecommendResponseDto = new WorkGetRecommdResponse(
                 cafe.getId(), cafe.getName(), cafe.getAddress());
             returnCafes.add(cafeRecommendResponseDto);
         }
+
         return returnCafes;
     }
 
