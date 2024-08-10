@@ -33,9 +33,21 @@ services:
       - "443:443"
     volumes:
       - ./nginx:/etc/nginx/
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     restart: always
     depends_on:
       - backend
+    networks:
+      - woravel-network
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    networks:
+      - woravel-network
 
 networks:
   woravel-network:
