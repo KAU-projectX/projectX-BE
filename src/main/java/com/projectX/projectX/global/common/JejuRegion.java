@@ -1,5 +1,7 @@
 package com.projectX.projectX.global.common;
 
+import java.util.Objects;
+
 public enum JejuRegion {
     JEJU(1), JOCHEON(2), SEONGSAN(3),
     JUNGMUN(4), ANDEOK(5), AEWOL(6);
@@ -17,4 +19,14 @@ public enum JejuRegion {
         }
         throw new IllegalArgumentException("Invalid integer value for JEJU REGION: " + value);
     }
+
+    public static JejuRegion findJeju(String str) {
+        for (JejuRegion e : JejuRegion.values()) {
+            if (Objects.equals(e.toString(), str)) {
+                return e;
+            }
+        }
+        throw new IllegalArgumentException("Invalid enum for JEJU REGION: " + str);
+    }
+
 }

@@ -2,7 +2,9 @@ package com.projectX.projectX.domain.travel.util;
 
 import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.travel.dto.response.TravelGetAllResponse;
+import com.projectX.projectX.domain.travel.dto.response.TravelGetRecommdResponse;
 import com.projectX.projectX.domain.travel.dto.response.TravelGetSpecificResponse;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,16 @@ public class TravelMapper {
             .travelImageList(tourImageList)
             .overview(tour.getOverview())
             .build();
+    }
+
+    public static List<TravelGetRecommdResponse> toTravelGetRecommendResponse(List<Tour> tours) {
+        List<TravelGetRecommdResponse> returnTours = new ArrayList<>();
+        for (Tour tour : tours) {
+            TravelGetRecommdResponse travelGetRecommdResponse = new TravelGetRecommdResponse(
+                tour.getId(), tour.getTitle(), tour.getAddress());
+            returnTours.add(travelGetRecommdResponse);
+        }
+        return returnTours;
     }
 
 }

@@ -27,6 +27,7 @@ public class Tour extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("투어 api 식별자")
+    @Column(name = "tour_id")
     private Long id;
 
     @Column(length = 100)

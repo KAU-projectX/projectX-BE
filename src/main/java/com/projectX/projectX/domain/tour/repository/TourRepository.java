@@ -16,4 +16,8 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     Page<Tour> findByContentTypeAndJejuRegion(ContentType contentType, JejuRegion jejuRegion,
         Pageable pageable);
+
+    Long countByJejuRegion(JejuRegion jejuRegion);
+
+    Page<Tour> findByJejuRegion(JejuRegion jejuRegion, Pageable pageable);
 }
