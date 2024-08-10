@@ -25,6 +25,8 @@ public class OAuthAttribute {
         switch (provider) {
             case "kakao":
                 return ofKakao(provider, attributeKey, attributes);
+            case "naver":
+                return ofNaver(provider, attributeKey, attributes);
             default:
                 throw new RuntimeException();
         }
@@ -40,6 +42,19 @@ public class OAuthAttribute {
             .nickname((String) kakaoProfile.get("nickname"))
             .email((String) kakaoAccount.get("email"))
             .attributes(kakaoAccount)
+            .attributeKey(attributeKey)
+            .provider(provider)
+            .build();
+    }
+
+    private static OAuthAttribute ofNaver(String provider, String attributeKey,
+        Map<String, Object> attributes){
+        Map<String, Object> response = (Map<String, Object>)attributes.get("response");
+
+        return OAuthAttribute.builder()
+            .nickname((String) response.get("name"))
+            .email((String) response.get("email"))
+            .attributes(response)
             .attributeKey(attributeKey)
             .provider(provider)
             .build();
