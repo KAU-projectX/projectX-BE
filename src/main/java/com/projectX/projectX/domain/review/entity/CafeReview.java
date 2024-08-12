@@ -36,7 +36,7 @@ public class CafeReview extends BaseEntity {
 
     @Comment("리뷰 별점")
     @Column(nullable = false)
-    private Float score;
+    private Integer score;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -52,8 +52,7 @@ public class CafeReview extends BaseEntity {
     private List<CafeReviewImage> cafeReviewImages;
 
     @Builder
-    public CafeReview(Long id, String contents, Float score, Member user, Cafe cafe) {
-        this.id = id;
+    public CafeReview(String contents, Integer score, Member user, Cafe cafe) {
         this.contents = contents;
         this.score = score;
         this.user = user;
