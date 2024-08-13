@@ -7,12 +7,17 @@ import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.domain.review.entity.CafeReview;
 import com.projectX.projectX.domain.review.exception.AlreadyExistCafeReviewException;
+import com.projectX.projectX.domain.review.exception.CannotUploadFileException;
 import com.projectX.projectX.domain.review.exception.ExceedFileException;
+import com.projectX.projectX.domain.review.exception.ReviewNotFoundException;
 import com.projectX.projectX.domain.review.repository.CafeReviewRepository;
 import com.projectX.projectX.domain.review.util.ReviewMapper;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
+import com.projectX.projectX.global.common.S3Service;
 import com.projectX.projectX.global.exception.ErrorCode;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,10 @@ public class CafeReviewService {
     private final MemberRepository memberRepository;
     private final CafeReviewRepository cafeReviewRepository;
 
+    private final S3Service s3Service;
+
+    private static final int MAX_REVIEW_IMAGE_SIZE = 5;
+
     private Cafe checkCafeExist(Long cafeId) {
         return cafeRepository.findById(cafeId).orElseThrow(
             () -> new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND)
@@ -40,6 +49,12 @@ public class CafeReviewService {
         );
     }
 
+    private CafeReview checkReviewExist(Long cafeReviewId) {
+        return cafeReviewRepository.findById(cafeReviewId).orElseThrow(
+            () -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND)
+        );
+    }
+
     private void checkMemberReview(Member member) {
         if (cafeReviewRepository.existsByUser(member)) {
             throw new AlreadyExistCafeReviewException(ErrorCode.ALREADY_EXIST_CAFE_REVIEW);
@@ -47,7 +62,7 @@ public class CafeReviewService {
     }
 
     private void checkFiles(List<MultipartFile> files) {
-        if (files.size() > 5) {
+        if (files.size() > MAX_REVIEW_IMAGE_SIZE) {
             throw new ExceedFileException(ErrorCode.EXCEED_FILE);
         }
     }
@@ -60,7 +75,10 @@ public class CafeReviewService {
         checkMemberReview(member);
         checkFiles(files);
 
-        createReviewContent(member, cafe, score, contents);
+        Long cafeReviewId = createReviewContent(member, cafe, score, contents);
+
+        String dirName = "/reviews/cafe/" + member.getUserEmail();
+        createReviewFile(cafeReviewId, files, dirName);
     }
 
     private Long createReviewContent(Member member, Cafe cafe, Integer score, String contents) {
@@ -68,4 +86,22 @@ public class CafeReviewService {
         cafeReviewRepository.save(cafeReview);
         return cafeReview.getId();
     }
+
+    private void createReviewFile(Long cafeReviewId, List<MultipartFile> files, String dirName) {
+        if (Objects.isNull(files)) {
+            return;
+        }
+
+        CafeReview cafeReview = checkReviewExist(cafeReviewId);
+
+        for (int i = 1; i <= files.size(); ++i) {
+            try {
+                String imageUrl = s3Service.upload(files.get(i - 1), dirName, i);
+                cafeReview.createReviewImage(imageUrl);
+            } catch (IOException e) {
+                throw new CannotUploadFileException(ErrorCode.CANNOT_UPLOAD_FILE);
+            }
+        }
+    }
+
 }
