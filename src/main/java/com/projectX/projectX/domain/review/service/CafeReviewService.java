@@ -77,7 +77,7 @@ public class CafeReviewService {
 
         Long cafeReviewId = createReviewContent(member, cafe, score, contents);
 
-        String dirName = "/reviews/cafe/" + member.getUserEmail();
+        String dirName = "reviews/cafe/" + member.getUserEmail();
         createReviewFile(cafeReviewId, files, dirName);
     }
 
