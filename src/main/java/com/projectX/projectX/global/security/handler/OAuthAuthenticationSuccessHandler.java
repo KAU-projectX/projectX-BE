@@ -54,6 +54,15 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
                 log.info("카카오 회원 access Token redirect 준비");
                 getRedirectStrategy().sendRedirect(request, response, kakaoRedirectUrl);
                 break;
+            case "naver":
+                String naverRedirectUrl = UriComponentsBuilder.fromUriString(LOGIN_REDIRECT_URI)
+                    .queryParam("accessToken", generatedToken.accessToken())
+                    .build()
+                    .encode(StandardCharsets.UTF_8)
+                    .toUriString();
+                log.info("네이버 회원 access Token redirect 준비");
+                getRedirectStrategy().sendRedirect(request, response, naverRedirectUrl);
+                break;
         }
     }
 }
