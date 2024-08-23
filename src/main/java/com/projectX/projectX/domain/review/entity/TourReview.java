@@ -36,7 +36,7 @@ public class TourReview extends BaseEntity {
 
     @Comment("리뷰 별점")
     @Column(nullable = false)
-    private Float score;
+    private Integer score;
 
     @ManyToOne
     @Comment("유저 id")
@@ -52,7 +52,7 @@ public class TourReview extends BaseEntity {
     private List<TourReviewImage> tourReviewImages;
 
     @Builder
-    public TourReview(Long id, String contents, Float score, Member user, Tour tour) {
+    public TourReview(Long id, String contents, Integer score, Member user, Tour tour) {
         this.id = id;
         this.contents = contents;
         this.score = score;

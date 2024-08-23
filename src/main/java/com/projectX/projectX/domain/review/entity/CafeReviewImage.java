@@ -34,8 +34,7 @@ public class CafeReviewImage extends BaseEntity {
     private CafeReview cafeReview;
 
     @Builder
-    public CafeReviewImage(Long id, String image, CafeReview cafeReview) {
-        this.id = id;
+    public CafeReviewImage(String image, CafeReview cafeReview) {
         this.image = image;
         this.cafeReview = cafeReview;
     }
