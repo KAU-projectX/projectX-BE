@@ -98,12 +98,11 @@ public class WorkService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkGetRecommdResponse> getWorkRecommendInfo(String jeju) {
+    public List<WorkGetRecommdResponse> getWorkRecommendInfo(JejuRegion jejuRegion) {
         Random random = new Random();
         Set<Long> set = new HashSet<>();
         List<Cafe> cafes = new ArrayList<>();
 
-        JejuRegion jejuRegion = JejuRegion.findJeju(jeju);
         long maxPage = cafeRepository.countByJejuRegion(jejuRegion);
 
         if (Objects.equals(maxPage, CANNOT_RECOMMEND_CAFE)) {
