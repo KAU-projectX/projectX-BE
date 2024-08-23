@@ -5,6 +5,10 @@ import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
+import com.projectX.projectX.domain.review.entity.CafeReview;
+import com.projectX.projectX.domain.review.entity.CafeReviewImage;
+import com.projectX.projectX.domain.review.exception.ReviewNotFoundException;
+import com.projectX.projectX.domain.review.repository.CafeReviewRepository;
 import com.projectX.projectX.domain.work.dto.response.WorkGetAllResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetDetailResponse;
 import com.projectX.projectX.domain.work.dto.response.WorkGetRecommdResponse;
@@ -34,6 +38,7 @@ public class WorkService {
 
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+    private final CafeReviewRepository cafeReviewRepository;
 
     private static final int RECOMMEND_WORK_SIZE = 3;
     private static final long CANNOT_RECOMMEND_CAFE = 0;
@@ -52,6 +57,14 @@ public class WorkService {
         );
 
         return member;
+    }
+
+    private CafeReview isExistCafeReview(Cafe cafe){
+        CafeReview cafeReview = cafeReviewRepository.findByCafe(cafe).orElseThrow(
+            () -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND)
+        );
+
+        return cafeReview;
     }
 
     @Transactional(readOnly = true)
@@ -85,7 +98,14 @@ public class WorkService {
     @Transactional(readOnly = true)
     public WorkGetDetailResponse getWorkDetailInfo(Long cafeId) {
         Cafe cafe = isExistCafe(cafeId);
-        return WorkMapper.toWorkGetDetailResponse(cafe);
+        CafeReview cafeReview = isExistCafeReview(cafe);
+
+        List<String> images = new ArrayList<>();
+        List<CafeReviewImage> imageList= cafeReview.getCafeReviewImages();
+        for(CafeReviewImage image : imageList){
+            images.add(image.getImage());
+        }
+        return WorkMapper.toWorkGetDetailResponse(cafe, images);
     }
 
     @Transactional

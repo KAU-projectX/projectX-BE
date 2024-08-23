@@ -33,7 +33,7 @@ public class WorkMapper {
             .build();
     }
 
-    public static WorkGetDetailResponse toWorkGetDetailResponse(Cafe cafe) {
+    public static WorkGetDetailResponse toWorkGetDetailResponse(Cafe cafe, List<String> images) {
         return WorkGetDetailResponse.builder()
             .id(cafe.getId())
             .address(cafe.getAddress())
@@ -44,7 +44,7 @@ public class WorkMapper {
             .longitude(cafe.getLongitude())
             .cafeType(cafe.getCafeType())
             .jejuRegion(cafe.getJejuRegion())
-            .imageUrl(new ArrayList<>())
+            .imageUrl(images)
             .build();
     }
 
