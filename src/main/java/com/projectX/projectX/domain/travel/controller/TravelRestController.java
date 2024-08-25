@@ -3,6 +3,7 @@ package com.projectX.projectX.domain.travel.controller;
 import com.projectX.projectX.domain.travel.dto.response.TravelGetAllResponse;
 import com.projectX.projectX.domain.travel.dto.response.TravelGetSpecificResponse;
 import com.projectX.projectX.domain.travel.service.TravelService;
+import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,7 +54,7 @@ public class TravelRestController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "travel 추천 API", description = "travel 추천하는 API입니다.")
     public ResponseDTO<?> getRecommdTravelInfo(
-        @RequestParam @NotBlank String jejuRegion
+        @RequestParam @NotBlank JejuRegion jejuRegion
     ) {
         return ResponseDTO.res(travelService.getTravelRecommd(jejuRegion), "travel 추천 조회에 성공했습니다.");
     }
