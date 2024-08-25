@@ -8,32 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkMapper {
 
-    public static List<WorkGetAllResponse> toWorkGetAllResponse(Page<Cafe> cafes) {
-        List<WorkGetAllResponse> cafeList = new ArrayList<>();
-        for (Cafe cafe : cafes) {
-            WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetResponse(cafe);
-            cafeList.add(workGetAllResponse);
-        }
-
-        return cafeList;
-    }
-
-    private static WorkGetAllResponse toWorkGetResponse(Cafe cafe) {
+    public static WorkGetAllResponse toWorkGetResponse(Cafe cafe, String imageUrl) {
         return WorkGetAllResponse.builder()
             .id(cafe.getId())
             .name(cafe.getName())
             .address(cafe.getAddress())
             .phone(cafe.getPhoneNumber())
-            .imageUrl("")
+            .imageUrl(imageUrl)
             .build();
     }
 
-    public static WorkGetDetailResponse toWorkGetDetailResponse(Cafe cafe) {
+    public static WorkGetDetailResponse toWorkGetDetailResponse(Cafe cafe, List<String> images) {
         return WorkGetDetailResponse.builder()
             .id(cafe.getId())
             .address(cafe.getAddress())
@@ -44,7 +33,7 @@ public class WorkMapper {
             .longitude(cafe.getLongitude())
             .cafeType(cafe.getCafeType())
             .jejuRegion(cafe.getJejuRegion())
-            .imageUrl(new ArrayList<>())
+            .imageUrl(images)
             .build();
     }
 
