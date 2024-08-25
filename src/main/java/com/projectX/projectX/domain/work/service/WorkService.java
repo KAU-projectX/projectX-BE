@@ -59,7 +59,7 @@ public class WorkService {
         return member;
     }
 
-    private CafeReview isExistCafeReview(Cafe cafe) {
+    private CafeReview isExistCafeReview(Cafe cafe){
         CafeReview cafeReview = cafeReviewRepository.findByCafe(cafe).orElseThrow(
             () -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND)
         );
@@ -86,17 +86,7 @@ public class WorkService {
             throw new InvalidPageException(ErrorCode.INVALID_PAGE);
         }
 
-        List<WorkGetAllResponse> cafeList = new ArrayList<>();
-        for (Cafe cafe : workPage) {
-            String image = "";
-            CafeReview cafeReview = isExistCafeReview(cafe);
-            if (!cafeReview.getCafeReviewImages().isEmpty()) {
-                image = cafeReview.getCafeReviewImages().get(0).getImage();
-            }
-            WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetResponse(cafe, image);
-            cafeList.add(workGetAllResponse);
-        }
-
+        List<WorkGetAllResponse> cafeList = WorkMapper.toWorkGetAllResponse(workPage);
         if (cafeList.isEmpty()) {
             throw new WorkNotFoundException(ErrorCode.WORK_NOT_FOUND);
         }
@@ -111,8 +101,8 @@ public class WorkService {
         CafeReview cafeReview = isExistCafeReview(cafe);
 
         List<String> images = new ArrayList<>();
-        List<CafeReviewImage> imageList = cafeReview.getCafeReviewImages();
-        for (CafeReviewImage image : imageList) {
+        List<CafeReviewImage> imageList= cafeReview.getCafeReviewImages();
+        for(CafeReviewImage image : imageList){
             images.add(image.getImage());
         }
         return WorkMapper.toWorkGetDetailResponse(cafe, images);
