@@ -5,6 +5,7 @@ import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
+import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.CafeReview;
 import com.projectX.projectX.domain.review.exception.AlreadyExistCafeReviewException;
 import com.projectX.projectX.domain.review.exception.CannotUploadFileException;
@@ -12,6 +13,8 @@ import com.projectX.projectX.domain.review.exception.ExceedFileException;
 import com.projectX.projectX.domain.review.exception.ReviewNotFoundException;
 import com.projectX.projectX.domain.review.repository.CafeReviewRepository;
 import com.projectX.projectX.domain.review.util.ReviewMapper;
+import com.projectX.projectX.domain.work.exception.InvalidPageException;
+import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
 import com.projectX.projectX.global.common.S3Service;
 import com.projectX.projectX.global.exception.ErrorCode;
@@ -20,6 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -102,6 +108,28 @@ public class CafeReviewService {
                 throw new CannotUploadFileException(ErrorCode.CANNOT_UPLOAD_FILE);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewGetAllResponse> getCafeReviewAll(Long cafeId, Integer page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        Cafe cafe = checkCafeExist(cafeId);
+        Page<CafeReview> reviewPage = cafeReviewRepository.findByCafe(cafe, pageable);
+
+        if (reviewPage.isEmpty()) {
+            if (page >= 0) {
+                throw new NoMorePageException(ErrorCode.NO_MORE_PAGE);
+            }
+            throw new InvalidPageException(ErrorCode.INVALID_PAGE);
+        }
+
+        List<ReviewGetAllResponse> reviewList = ReviewMapper.toCafeReviewGetAllResponse(reviewPage);
+
+        if (reviewList.isEmpty()) {
+            throw new WorkNotFoundException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+
+        return reviewList;
     }
 
 }
