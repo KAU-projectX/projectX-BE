@@ -12,7 +12,7 @@ import com.projectX.projectX.domain.review.exception.CannotUploadFileException;
 import com.projectX.projectX.domain.review.exception.ExceedFileException;
 import com.projectX.projectX.domain.review.exception.ReviewNotFoundException;
 import com.projectX.projectX.domain.review.repository.CafeReviewRepository;
-import com.projectX.projectX.domain.review.util.ReviewMapper;
+import com.projectX.projectX.domain.review.util.CafeReviewMapper;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
@@ -88,7 +88,7 @@ public class CafeReviewService {
     }
 
     private Long createReviewContent(Member member, Cafe cafe, Integer score, String contents) {
-        CafeReview cafeReview = ReviewMapper.toCafeReview(member, cafe, score, contents);
+        CafeReview cafeReview = CafeReviewMapper.toCafeReview(member, cafe, score, contents);
         cafeReviewRepository.save(cafeReview);
         return cafeReview.getId();
     }
@@ -123,7 +123,7 @@ public class CafeReviewService {
             throw new InvalidPageException(ErrorCode.INVALID_PAGE);
         }
 
-        List<ReviewGetAllResponse> reviewList = ReviewMapper.toCafeReviewGetAllResponse(reviewPage);
+        List<ReviewGetAllResponse> reviewList = CafeReviewMapper.toCafeReviewGetAllResponse(reviewPage);
 
         if (reviewList.isEmpty()) {
             throw new WorkNotFoundException(ErrorCode.REVIEW_NOT_FOUND);

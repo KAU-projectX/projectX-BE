@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
-public class ReviewMapper {
+public class CafeReviewMapper {
 
     public static CafeReview toCafeReview(Member member, Cafe cafe, Integer score,
         String contents) {
@@ -31,7 +31,7 @@ public class ReviewMapper {
     public static List<ReviewGetAllResponse> toCafeReviewGetAllResponse(Page<CafeReview> reviews) {
         List<ReviewGetAllResponse> cafeList = new ArrayList<>();
         for (CafeReview review : reviews) {
-            ReviewGetAllResponse reviewGetAllResponse = ReviewMapper.toCafeReviewGetResponse(review);
+            ReviewGetAllResponse reviewGetAllResponse = CafeReviewMapper.toCafeReviewGetResponse(review);
             cafeList.add(reviewGetAllResponse);
         }
 
@@ -41,7 +41,7 @@ public class ReviewMapper {
     private static ReviewGetAllResponse toCafeReviewGetResponse(CafeReview review) {
         List<CafeReviewImage> reviewImages = review.getCafeReviewImages();
         if (reviewImages.isEmpty()) {
-            return ReviewMapper.getReviewWithoutImage(review);
+            return CafeReviewMapper.getReviewWithoutImage(review);
         }
 
         List<String> images = new ArrayList<>();
@@ -49,7 +49,7 @@ public class ReviewMapper {
             images.add(image.getImage());
         }
 
-        return ReviewMapper.getReview(review, images);
+        return CafeReviewMapper.getReview(review, images);
 
     }
 
