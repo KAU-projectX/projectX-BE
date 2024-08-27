@@ -4,6 +4,7 @@ import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.review.util.ReviewMapper;
 import com.projectX.projectX.global.common.BaseEntity;
+import com.projectX.projectX.global.common.RecommendationType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +40,10 @@ public class CafeReview extends BaseEntity {
     @Column(nullable = false)
     private Integer score;
 
+    @Comment("추천 여부")
+    @Column(nullable = false)
+    private RecommendationType recommendationType;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     @Comment("유저 id")
@@ -53,11 +58,13 @@ public class CafeReview extends BaseEntity {
     private List<CafeReviewImage> cafeReviewImages;
 
     @Builder
-    public CafeReview(String contents, Integer score, Member user, Cafe cafe) {
+    public CafeReview(String contents, Integer score, Member user, Cafe cafe,
+        RecommendationType recommendationType) {
         this.contents = contents;
         this.score = score;
         this.user = user;
         this.cafe = cafe;
+        this.recommendationType = recommendationType;
         this.cafeReviewImages = new ArrayList<>();
     }
 
