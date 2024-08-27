@@ -1,5 +1,6 @@
 package com.projectX.projectX.domain.review.controller;
 
+import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.CafeReviewService;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,8 +40,19 @@ public class CafeReviewRestController {
         @RequestParam String contents,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        reviewService.createCafeReview(cafeId, files, score, contents, "dlwnsfml@naver.com");//user.getEmail());
+        reviewService.createCafeReview(cafeId, files, score, contents, user.getEmail());
         return ResponseDTO.res("카페 리뷰를 성공적으로 저장했습니다.");
+    }
+
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "카페 리뷰 조회 API", description = "게시물 별 카페 리뷰를 조회하는 API 입니다.")
+    public ResponseDTO<?> getWorkReviewAllInfo(
+        @PathVariable("cafe_id") @NotNull Long cafeId,
+        @RequestParam Integer page
+    ) {
+        List<ReviewGetAllResponse> reviews = reviewService.getCafeReviewAll(cafeId, page);
+        return ResponseDTO.res(reviews, "카페 리뷰 조회를 완료하였습니다.");
     }
 
 }
