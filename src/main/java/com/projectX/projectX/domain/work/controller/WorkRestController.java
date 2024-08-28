@@ -69,7 +69,7 @@ public class WorkRestController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 추천 API", description = "work, tour에서 사용하는 카페 추천 API 입니다.")
     public ResponseDTO<?> getWorkRecommendInfo(
-        @RequestParam @NotBlank String jejuRegion
+        @RequestParam JejuRegion jejuRegion
     ) {
         List<WorkGetRecommdResponse> result = workService.getWorkRecommendInfo(jejuRegion);
         return ResponseDTO.res(result, "추천 정보 조회에 성공했습니다.");

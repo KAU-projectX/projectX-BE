@@ -93,12 +93,11 @@ public class TravelService {
     }
 
     @Transactional(readOnly = true)
-    public List<TravelGetRecommdResponse> getTravelRecommd(String jeju) {
+    public List<TravelGetRecommdResponse> getTravelRecommd(JejuRegion jejuRegion) {
         Random random = new Random();
         Set<Long> set = new HashSet<>();
         List<Tour> tours = new ArrayList<>();
 
-        JejuRegion jejuRegion = JejuRegion.findJeju(jeju);
         long maxPage = tourRepository.countByJejuRegion(jejuRegion);
         while (tours.size() < RECOMMEND_WORK_SIZE) {
             long randomPage = random.nextLong(maxPage);
