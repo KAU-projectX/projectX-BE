@@ -9,6 +9,8 @@ import com.projectX.projectX.global.common.RecommendationType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +45,7 @@ public class CafeReview extends BaseEntity {
 
     @Comment("추천 여부")
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private RecommendationType recommendationType;
 
     @ManyToOne
