@@ -51,6 +51,10 @@ public class Calendar extends BaseEntity {
     @Comment("일정 메모")
     private String memo;
 
+    @Comment("스케줄 타입")
+    @Column(nullable = false)
+    private ScheduleType scheduleType;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     @Comment("유저 id")
@@ -59,7 +63,7 @@ public class Calendar extends BaseEntity {
     @Builder
     public Calendar(Long id, LocalDate dateFrom, LocalDate dateTo, LocalTime timeFrom,
         LocalTime timeTo,
-        String title, String location, String memo, Member user) {
+        String title, String location, String memo, Member user, ScheduleType scheduleType) {
         this.id = id;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
@@ -69,5 +73,6 @@ public class Calendar extends BaseEntity {
         this.location = location;
         this.memo = memo;
         this.user = user;
+        this.scheduleType = scheduleType;
     }
 }
