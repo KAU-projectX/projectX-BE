@@ -81,7 +81,9 @@ public class CafeReviewService {
         Cafe cafe = checkCafeExist(cafeId);
         Member member = checkMemberExist(email);
         checkMemberReview(member);
-        checkFiles(files);
+        if (!files.isEmpty()) {
+            checkFiles(files);
+        }
 
         Long cafeReviewId = createReviewContent(member, cafe, score, contents, recommendationType);
 
