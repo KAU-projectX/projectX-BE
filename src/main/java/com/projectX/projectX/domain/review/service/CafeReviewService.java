@@ -16,6 +16,7 @@ import com.projectX.projectX.domain.review.util.CafeReviewMapper;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
+import com.projectX.projectX.global.common.RecommendationType;
 import com.projectX.projectX.global.common.S3Service;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.IOException;
@@ -75,20 +76,22 @@ public class CafeReviewService {
 
     @Transactional
     public void createCafeReview(Long cafeId, List<MultipartFile> files, Integer score,
-        String contents, String email) {
+        String contents, RecommendationType recommendationType, String email) {
         Cafe cafe = checkCafeExist(cafeId);
         Member member = checkMemberExist(email);
         checkMemberReview(member);
         checkFiles(files);
 
-        Long cafeReviewId = createReviewContent(member, cafe, score, contents);
+        Long cafeReviewId = createReviewContent(member, cafe, score, contents, recommendationType);
 
         String dirName = "reviews/cafe/" + member.getUserEmail();
         createReviewFile(cafeReviewId, files, dirName);
     }
 
-    private Long createReviewContent(Member member, Cafe cafe, Integer score, String contents) {
-        CafeReview cafeReview = CafeReviewMapper.toCafeReview(member, cafe, score, contents);
+    private Long createReviewContent(Member member, Cafe cafe, Integer score, String contents,
+        RecommendationType recommendationType) {
+        CafeReview cafeReview = CafeReviewMapper.toCafeReview(member, cafe, score, contents,
+            recommendationType);
         cafeReviewRepository.save(cafeReview);
         return cafeReview.getId();
     }
@@ -123,7 +126,8 @@ public class CafeReviewService {
             throw new InvalidPageException(ErrorCode.INVALID_PAGE);
         }
 
-        List<ReviewGetAllResponse> reviewList = CafeReviewMapper.toCafeReviewGetAllResponse(reviewPage);
+        List<ReviewGetAllResponse> reviewList = CafeReviewMapper.toCafeReviewGetAllResponse(
+            reviewPage);
 
         if (reviewList.isEmpty()) {
             throw new WorkNotFoundException(ErrorCode.REVIEW_NOT_FOUND);

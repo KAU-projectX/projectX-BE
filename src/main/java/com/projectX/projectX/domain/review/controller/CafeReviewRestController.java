@@ -2,6 +2,7 @@ package com.projectX.projectX.domain.review.controller;
 
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.CafeReviewService;
+import com.projectX.projectX.global.common.RecommendationType;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,9 +39,11 @@ public class CafeReviewRestController {
         @RequestParam(value = "multipartFile", required = false) List<MultipartFile> files,
         @RequestParam Integer score,
         @RequestParam String contents,
+        @RequestParam RecommendationType recommendationType,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        reviewService.createCafeReview(cafeId, files, score, contents, user.getEmail());
+        reviewService.createCafeReview(cafeId, files, score, contents, recommendationType,
+            user.getEmail());
         return ResponseDTO.res("카페 리뷰를 성공적으로 저장했습니다.");
     }
 

@@ -5,6 +5,7 @@ import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.CafeReview;
 import com.projectX.projectX.domain.review.entity.CafeReviewImage;
+import com.projectX.projectX.global.common.RecommendationType;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -12,12 +13,13 @@ import org.springframework.data.domain.Page;
 public class CafeReviewMapper {
 
     public static CafeReview toCafeReview(Member member, Cafe cafe, Integer score,
-        String contents) {
+        String contents, RecommendationType recommendationType) {
         return CafeReview.builder()
             .score(score)
             .contents(contents)
             .user(member)
             .cafe(cafe)
+            .recommendationType(recommendationType)
             .build();
     }
 
@@ -31,7 +33,8 @@ public class CafeReviewMapper {
     public static List<ReviewGetAllResponse> toCafeReviewGetAllResponse(Page<CafeReview> reviews) {
         List<ReviewGetAllResponse> cafeList = new ArrayList<>();
         for (CafeReview review : reviews) {
-            ReviewGetAllResponse reviewGetAllResponse = CafeReviewMapper.toCafeReviewGetResponse(review);
+            ReviewGetAllResponse reviewGetAllResponse = CafeReviewMapper.toCafeReviewGetResponse(
+                review);
             cafeList.add(reviewGetAllResponse);
         }
 
