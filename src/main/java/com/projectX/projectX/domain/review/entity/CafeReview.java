@@ -2,6 +2,7 @@ package com.projectX.projectX.domain.review.entity;
 
 import com.projectX.projectX.domain.cafe.entity.Cafe;
 import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.util.CafeReviewMapper;
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.RecommendationType;
@@ -71,6 +72,12 @@ public class CafeReview extends BaseEntity {
     public void createReviewImage(String url) {
         CafeReviewImage cafeReviewImage = CafeReviewMapper.toCafeReviewImage(this, url);
         this.cafeReviewImages.add(cafeReviewImage);
+    }
+
+    public void updateReview(ReviewUpdateRequest request) {
+        this.recommendationType = RecommendationType.fromInt(request.recommendType());
+        this.score = request.score();
+        this.contents = request.contents();
     }
 
 }
