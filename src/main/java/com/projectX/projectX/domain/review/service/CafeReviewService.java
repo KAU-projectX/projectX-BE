@@ -5,6 +5,7 @@ import com.projectX.projectX.domain.cafe.repository.CafeRepository;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
+import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.CafeReview;
 import com.projectX.projectX.domain.review.exception.AlreadyExistCafeReviewException;
@@ -134,6 +135,15 @@ public class CafeReviewService {
         }
 
         return reviewList;
+    }
+
+    @Transactional
+    public void updateWorkReview(Long cafeId, Long reviewId, ReviewUpdateRequest request,
+        String userEmail) {
+        checkCafeExist(cafeId);
+        checkMemberExist(userEmail);
+        CafeReview cafeReview = checkReviewExist(reviewId);
+        cafeReview.updateReview(request);
     }
 
 }
