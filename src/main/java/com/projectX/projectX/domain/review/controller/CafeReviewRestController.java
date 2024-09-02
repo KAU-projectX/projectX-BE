@@ -48,8 +48,7 @@ public class CafeReviewRestController {
         @RequestParam RecommendationType recommendationType,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        reviewService.createCafeReview(cafeId, files, score, contents, recommendationType,
-            "dlwnsfml@naver.com");//user.getEmail());
+        reviewService.createCafeReview(cafeId, files, score, contents, recommendationType, user.getEmail());
         return ResponseDTO.res("카페 리뷰를 성공적으로 저장했습니다.");
     }
 
@@ -73,7 +72,7 @@ public class CafeReviewRestController {
         @RequestBody @Valid ReviewUpdateRequest request,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        reviewService.updateWorkReview(cafeId, reviewId, request, "dlwnsfml@naver.com");//user.getEmail());
+        reviewService.updateWorkReview(cafeId, reviewId, request, user.getEmail());
         return ResponseDTO.res("카페 리뷰를 성공적으로 업데이트했습니다.");
     }
 
