@@ -8,7 +8,7 @@ import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.CafeReview;
-import com.projectX.projectX.domain.review.exception.AlreadyExistCafeReviewException;
+import com.projectX.projectX.domain.review.exception.AlreadyExistReviewException;
 import com.projectX.projectX.domain.review.exception.CannotUploadFileException;
 import com.projectX.projectX.domain.review.exception.ExceedFileException;
 import com.projectX.projectX.domain.review.exception.ReviewNotFoundException;
@@ -65,7 +65,7 @@ public class CafeReviewService {
 
     private void checkMemberReview(Member member) {
         if (cafeReviewRepository.existsByUser(member)) {
-            throw new AlreadyExistCafeReviewException(ErrorCode.ALREADY_EXIST_CAFE_REVIEW);
+            throw new AlreadyExistReviewException(ErrorCode.ALREADY_EXIST_REVIEW);
         }
     }
 
