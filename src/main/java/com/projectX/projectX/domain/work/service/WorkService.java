@@ -60,14 +60,6 @@ public class WorkService {
         return member;
     }
 
-    private CafeReview isExistCafeReview(Cafe cafe) {
-        CafeReview cafeReview = cafeReviewRepository.findByCafe(cafe).orElseThrow(
-            () -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND)
-        );
-
-        return cafeReview;
-    }
-
     @Transactional(readOnly = true)
     public List<WorkGetAllResponse> getWorkAllInfo(Integer page, CafeType cafeType,
         JejuRegion jejuRegion) {
@@ -109,12 +101,15 @@ public class WorkService {
     @Transactional(readOnly = true)
     public WorkGetDetailResponse getWorkDetailInfo(Long cafeId) {
         Cafe cafe = isExistCafe(cafeId);
-        CafeReview cafeReview = isExistCafeReview(cafe);
+        Optional<CafeReview> cafeReview = cafeReviewRepository.findByCafe(cafe);
+
 
         List<String> images = new ArrayList<>();
-        List<CafeReviewImage> imageList = cafeReview.getCafeReviewImages();
-        for (CafeReviewImage image : imageList) {
-            images.add(image.getImage());
+        if(cafeReview.isPresent()) {
+            List<CafeReviewImage> imageList = cafeReview.get().getCafeReviewImages();
+            for (CafeReviewImage image : imageList) {
+                images.add(image.getImage());
+            }
         }
         return WorkMapper.toWorkGetDetailResponse(cafe, images);
     }
