@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -89,9 +90,9 @@ public class WorkService {
         List<WorkGetAllResponse> cafeList = new ArrayList<>();
         for (Cafe cafe : workPage) {
             String image = "";
-            CafeReview cafeReview = isExistCafeReview(cafe);
-            if (!cafeReview.getCafeReviewImages().isEmpty()) {
-                image = cafeReview.getCafeReviewImages().get(0).getImage();
+            Optional<CafeReview> cafeReview = cafeReviewRepository.findByCafe(cafe);
+            if (cafeReview.isPresent() && !cafeReview.get().getCafeReviewImages().isEmpty()) {
+                image = cafeReview.get().getCafeReviewImages().get(0).getImage();
             }
             WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetResponse(cafe, image);
             cafeList.add(workGetAllResponse);
