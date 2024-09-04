@@ -32,7 +32,7 @@ public class WorkRestController {
 
     private final WorkService workService;
 
-    @GetMapping("/")
+    @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "work 정보 get API", description = "work 정보를 get 하는 API입니다.")
     public ResponseDTO<?> createCafeInfo(
