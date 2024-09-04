@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -59,14 +60,6 @@ public class WorkService {
         return member;
     }
 
-    private CafeReview isExistCafeReview(Cafe cafe) {
-        CafeReview cafeReview = cafeReviewRepository.findByCafe(cafe).orElseThrow(
-            () -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND)
-        );
-
-        return cafeReview;
-    }
-
     @Transactional(readOnly = true)
     public List<WorkGetAllResponse> getWorkAllInfo(Integer page, CafeType cafeType,
         JejuRegion jejuRegion) {
@@ -89,9 +82,9 @@ public class WorkService {
         List<WorkGetAllResponse> cafeList = new ArrayList<>();
         for (Cafe cafe : workPage) {
             String image = "";
-            CafeReview cafeReview = isExistCafeReview(cafe);
-            if (!cafeReview.getCafeReviewImages().isEmpty()) {
-                image = cafeReview.getCafeReviewImages().get(0).getImage();
+            Optional<CafeReview> cafeReview = cafeReviewRepository.findByCafe(cafe);
+            if (cafeReview.isPresent() && !cafeReview.get().getCafeReviewImages().isEmpty()) {
+                image = cafeReview.get().getCafeReviewImages().get(0).getImage();
             }
             WorkGetAllResponse workGetAllResponse = WorkMapper.toWorkGetResponse(cafe, image);
             cafeList.add(workGetAllResponse);
@@ -108,12 +101,15 @@ public class WorkService {
     @Transactional(readOnly = true)
     public WorkGetDetailResponse getWorkDetailInfo(Long cafeId) {
         Cafe cafe = isExistCafe(cafeId);
-        CafeReview cafeReview = isExistCafeReview(cafe);
+        Optional<CafeReview> cafeReview = cafeReviewRepository.findByCafe(cafe);
+
 
         List<String> images = new ArrayList<>();
-        List<CafeReviewImage> imageList = cafeReview.getCafeReviewImages();
-        for (CafeReviewImage image : imageList) {
-            images.add(image.getImage());
+        if(cafeReview.isPresent()) {
+            List<CafeReviewImage> imageList = cafeReview.get().getCafeReviewImages();
+            for (CafeReviewImage image : imageList) {
+                images.add(image.getImage());
+            }
         }
         return WorkMapper.toWorkGetDetailResponse(cafe, images);
     }
