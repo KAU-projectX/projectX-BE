@@ -3,6 +3,7 @@ package com.projectX.projectX.domain.review.service;
 import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.member.exception.InvalidMemberException;
 import com.projectX.projectX.domain.member.repository.MemberRepository;
+import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.TourReview;
 import com.projectX.projectX.domain.review.exception.AlreadyExistReviewException;
@@ -134,6 +135,15 @@ public class TourReviewService {
         }
 
         return reviewList;
+    }
+
+    @Transactional
+    public void updateTourReview(Long travelId, Long reviewId, ReviewUpdateRequest request,
+        String userEmail) {
+        checkTourExist(travelId);
+        checkMemberExist(userEmail);
+        TourReview tourReview = checkReviewExist(reviewId);
+        tourReview.updateReview(request);
     }
 
 }

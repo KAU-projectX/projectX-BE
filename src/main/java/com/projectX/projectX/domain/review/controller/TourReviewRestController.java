@@ -1,5 +1,6 @@
 package com.projectX.projectX.domain.review.controller;
 
+import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.TourReviewService;
 import com.projectX.projectX.global.common.RecommendationType;
@@ -7,14 +8,17 @@ import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -54,6 +58,19 @@ public class TourReviewRestController {
     ) {
         List<ReviewGetAllResponse> reviews = tourReviewService.getTourReviewAll(travelId, page);
         return ResponseDTO.res(reviews, "관광지 리뷰 조회를 완료하였습니다.");
+    }
+
+    @PatchMapping("/{review_id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "관광지 리뷰 수정 API", description = "관광지 게시물의 리뷰를 수정하는 API입니다.")
+    public ResponseDTO<?> updateTravelReview(
+        @PathVariable("travel_id") @NotNull Long cafeId,
+        @PathVariable("review_id") @NotNull Long reviewId,
+        @RequestBody @Valid ReviewUpdateRequest request,
+        @AuthenticationPrincipal CustomOAuth2User user
+    ) {
+        tourReviewService.updateTourReview(cafeId, reviewId, request, user.getEmail());
+        return ResponseDTO.res("관광지 리뷰를 성공적으로 업데이트했습니다.");
     }
 
 

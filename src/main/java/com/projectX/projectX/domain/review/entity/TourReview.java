@@ -1,6 +1,7 @@
 package com.projectX.projectX.domain.review.entity;
 
 import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.util.TourReviewMapper;
 import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.global.common.BaseEntity;
@@ -74,5 +75,11 @@ public class TourReview extends BaseEntity {
     public void createReviewImage(String url) {
         TourReviewImage tourReviewImage = TourReviewMapper.toTourReviewImage(this, url);
         this.tourReviewImages.add(tourReviewImage);
+    }
+
+    public void updateReview(ReviewUpdateRequest request) {
+        this.recommendationType = RecommendationType.fromInt(request.recommendType());
+        this.score = request.score();
+        this.contents = request.contents();
     }
 }
