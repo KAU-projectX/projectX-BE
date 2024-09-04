@@ -1,5 +1,6 @@
 package com.projectX.projectX.domain.review.controller;
 
+import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.TourReviewService;
 import com.projectX.projectX.global.common.RecommendationType;
 import com.projectX.projectX.global.common.ResponseDTO;
@@ -11,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,17 @@ public class TourReviewRestController {
         tourReviewService.createTourReview(tourId, files, score, contents, recommendationType,
             user.getEmail());
         return ResponseDTO.res("관광지 리뷰를 성공적으로 저장했습니다.");
+    }
+
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "관광지 리뷰 조회 API", description = "관광지 게시물 별 리뷰를 조회하는 API 입니다.")
+    public ResponseDTO<?> getTravelReviewAllInfo(
+        @PathVariable("travel_id") @NotNull Long travelId,
+        @RequestParam Integer page
+    ) {
+        List<ReviewGetAllResponse> reviews = tourReviewService.getTourReviewAll(travelId, page);
+        return ResponseDTO.res(reviews, "관광지 리뷰 조회를 완료하였습니다.");
     }
 
 
