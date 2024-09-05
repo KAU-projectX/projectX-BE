@@ -69,6 +69,9 @@ public class TourReviewService {
 
 
     private void checkFiles(List<MultipartFile> files) {
+        if (Objects.isNull(files)) {
+            return;
+        }
         if (files.size() > MAX_REVIEW_IMAGE_SIZE) {
             throw new ExceedFileException(ErrorCode.EXCEED_FILE);
         }
@@ -80,9 +83,7 @@ public class TourReviewService {
         Tour tour = checkTourExist(tourId);
         Member member = checkMemberExist(email);
         checkMemberReview(member, tour);
-        if (!files.isEmpty()) {
-            checkFiles(files);
-        }
+        checkFiles(files);
 
         Long tourReviewId = createReviewContent(member, tour, score, contents, recommendationType);
         String dirName = "reviews/tour/" + member.getUserEmail();
