@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TourReviewRepository extends JpaRepository<TourReview, Long> {
 
-    Boolean existsByUser(Member member);
+    Boolean existsByUserAndTour(Member member, Tour tour);
 
     Page<TourReview> findByTour(Tour tour, Pageable pageable);
 }

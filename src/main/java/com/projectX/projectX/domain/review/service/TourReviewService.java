@@ -61,8 +61,8 @@ public class TourReviewService {
         );
     }
 
-    private void checkMemberReview(Member member) {
-        if (tourReviewRepository.existsByUser(member)) {
+    private void checkMemberReview(Member member, Tour tour) {
+        if (tourReviewRepository.existsByUserAndTour(member, tour)) {
             throw new AlreadyExistReviewException(ErrorCode.ALREADY_EXIST_REVIEW);
         }
     }
@@ -79,7 +79,7 @@ public class TourReviewService {
         String contents, RecommendationType recommendationType, String email) {
         Tour tour = checkTourExist(tourId);
         Member member = checkMemberExist(email);
-        checkMemberReview(member);
+        checkMemberReview(member, tour);
         if (!files.isEmpty()) {
             checkFiles(files);
         }
