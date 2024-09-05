@@ -37,14 +37,14 @@ public class TourReviewRestController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "관광지 리뷰 등록 API", description = "관광지 리뷰를 등록하는 API 입니다.")
     public ResponseDTO<String> createTourReview(
-        @PathVariable("tour_id") @NotNull Long tourId,
+        @PathVariable("travel_id") @NotNull Long travelId,
         @RequestParam(value = "multipartFile", required = false) List<MultipartFile> files,
         @RequestParam Integer score,
         @RequestParam String contents,
         @RequestParam RecommendationType recommendationType,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
-        tourReviewService.createTourReview(tourId, files, score, contents, recommendationType,
+        tourReviewService.createTourReview(travelId, files, score, contents, recommendationType,
             user.getEmail());
         return ResponseDTO.res("관광지 리뷰를 성공적으로 저장했습니다.");
     }
