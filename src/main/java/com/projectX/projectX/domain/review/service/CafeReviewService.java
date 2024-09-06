@@ -73,6 +73,7 @@ public class CafeReviewService {
         if (Objects.isNull(files)) {
             return;
         }
+
         if (files.size() > MAX_REVIEW_IMAGE_SIZE) {
             throw new ExceedFileException(ErrorCode.EXCEED_FILE);
         }
