@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/cafes/{cafe_id}/reviews")
+@RequestMapping("v1/works/{cafe_id}/reviews")
 @Tag(name = "cafe review api", description = "카페 리뷰 관련 API")
 public class CafeReviewRestController {
 
