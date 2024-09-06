@@ -70,6 +70,9 @@ public class CafeReviewService {
     }
 
     private void checkFiles(List<MultipartFile> files) {
+        if (Objects.isNull(files)) {
+            return;
+        }
         if (files.size() > MAX_REVIEW_IMAGE_SIZE) {
             throw new ExceedFileException(ErrorCode.EXCEED_FILE);
         }
@@ -81,9 +84,7 @@ public class CafeReviewService {
         Cafe cafe = checkCafeExist(cafeId);
         Member member = checkMemberExist(email);
         checkMemberReview(member, cafe);
-        if (!files.isEmpty()) {
-            checkFiles(files);
-        }
+        checkFiles(files);
 
         Long cafeReviewId = createReviewContent(member, cafe, score, contents, recommendationType);
 
