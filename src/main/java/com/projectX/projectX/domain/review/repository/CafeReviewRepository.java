@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CafeReviewRepository extends JpaRepository<CafeReview, Long> {
 
-    Boolean existsByUser(Member member);
+    Boolean existsByUserAndCafe(Member member, Cafe cafe);
 
     Optional<CafeReview> findByCafe(Cafe cafe);
 

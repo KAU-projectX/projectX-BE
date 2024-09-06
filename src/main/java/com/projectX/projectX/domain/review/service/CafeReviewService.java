@@ -63,8 +63,8 @@ public class CafeReviewService {
         );
     }
 
-    private void checkMemberReview(Member member) {
-        if (cafeReviewRepository.existsByUser(member)) {
+    private void checkMemberReview(Member member, Cafe cafe) {
+        if (cafeReviewRepository.existsByUserAndCafe(member, cafe)) {
             throw new AlreadyExistReviewException(ErrorCode.ALREADY_EXIST_REVIEW);
         }
     }
@@ -80,7 +80,7 @@ public class CafeReviewService {
         String contents, RecommendationType recommendationType, String email) {
         Cafe cafe = checkCafeExist(cafeId);
         Member member = checkMemberExist(email);
-        checkMemberReview(member);
+        checkMemberReview(member, cafe);
         if (!files.isEmpty()) {
             checkFiles(files);
         }
