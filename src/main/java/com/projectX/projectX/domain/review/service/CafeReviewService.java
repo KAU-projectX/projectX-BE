@@ -89,7 +89,7 @@ public class CafeReviewService {
 
         Long cafeReviewId = createReviewContent(member, cafe, score, contents, recommendationType);
 
-        String dirName = "reviews/cafe/" + member.getUserEmail();
+        String dirName = "reviews/cafe/" + email;
         createReviewFile(cafeReviewId, files, dirName);
     }
 
