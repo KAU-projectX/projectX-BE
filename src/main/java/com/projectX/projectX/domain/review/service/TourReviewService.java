@@ -17,7 +17,7 @@ import com.projectX.projectX.domain.tour.repository.TourRepository;
 import com.projectX.projectX.domain.travel.exception.TravelNotFoundException;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import com.projectX.projectX.global.common.S3Service;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.IOException;

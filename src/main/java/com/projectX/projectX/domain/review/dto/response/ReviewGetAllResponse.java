@@ -1,6 +1,6 @@
 package com.projectX.projectX.domain.review.dto.response;
 
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import java.util.List;
 import lombok.Builder;
 

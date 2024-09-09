@@ -5,7 +5,7 @@ import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.CafeReview;
 import com.projectX.projectX.domain.review.entity.CafeReviewImage;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
