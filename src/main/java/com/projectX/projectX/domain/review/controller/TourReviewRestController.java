@@ -71,7 +71,7 @@ public class TourReviewRestController {
     public ResponseDTO<?> updateTravelReview(
         @PathVariable("travel_id") @NotNull Long cafeId,
         @PathVariable("review_id") @NotNull Long reviewId,
-        @RequestBody @Valid ReviewUpdateRequest request,
+        @RequestBody ReviewUpdateRequest request,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
         tourReviewService.updateTourReview(cafeId, reviewId, request, user.getEmail());
