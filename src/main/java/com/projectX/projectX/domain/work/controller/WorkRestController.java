@@ -34,7 +34,7 @@ public class WorkRestController {
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "work 정보 get API", description = "work 정보를 get 하는 API입니다.")
+    @Operation(summary = "work 전체정보 조회 API", description = "work 전체정보를 조회하는 API입니다.")
     public ResponseDTO<?> createCafeInfo(
         @RequestParam @NotNull Integer page,
         @RequestParam @NotNull CafeType cafeType,
@@ -46,7 +46,7 @@ public class WorkRestController {
 
     @GetMapping("/{cafe_id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "work 상세 정보 get API", description = "cafe 상세 정보를 get하는 API입니다.")
+    @Operation(summary = "work 상세정보 조회 API", description = "cafe 상세 정보를 조회하는 API입니다.")
     public ResponseDTO<?> getWorkDetailInfo(
         @PathVariable("cafe_id") @NotNull Long cafe_id
     ) {

@@ -5,7 +5,7 @@ import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.entity.TourReview;
 import com.projectX.projectX.domain.review.entity.TourReviewImage;
 import com.projectX.projectX.domain.tour.entity.Tour;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;

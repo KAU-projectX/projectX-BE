@@ -1,4 +1,4 @@
-package com.projectX.projectX.global.common;
+package com.projectX.projectX.domain.review.entity;
 
 public enum RecommendationType {
     RECOMMEND(1), NEUTRAL(2), NOT_RECOMMEND(3);

@@ -3,7 +3,7 @@ package com.projectX.projectX.domain.review.controller;
 import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.CafeReviewService;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/cafes/{cafe_id}/reviews")
+@RequestMapping("v1/works/{cafe_id}/reviews")
 @Tag(name = "cafe review api", description = "카페 리뷰 관련 API")
 public class CafeReviewRestController {
 

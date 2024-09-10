@@ -17,7 +17,7 @@ import com.projectX.projectX.domain.review.util.CafeReviewMapper;
 import com.projectX.projectX.domain.work.exception.InvalidPageException;
 import com.projectX.projectX.domain.work.exception.NoMorePageException;
 import com.projectX.projectX.domain.work.exception.WorkNotFoundException;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import com.projectX.projectX.global.common.S3Service;
 import com.projectX.projectX.global.exception.ErrorCode;
 import java.io.IOException;
@@ -63,13 +63,17 @@ public class CafeReviewService {
         );
     }
 
-    private void checkMemberReview(Member member) {
-        if (cafeReviewRepository.existsByUser(member)) {
+    private void checkMemberReview(Member member, Cafe cafe) {
+        if (cafeReviewRepository.existsByUserAndCafe(member, cafe)) {
             throw new AlreadyExistReviewException(ErrorCode.ALREADY_EXIST_REVIEW);
         }
     }
 
     private void checkFiles(List<MultipartFile> files) {
+        if (Objects.isNull(files)) {
+            return;
+        }
+
         if (files.size() > MAX_REVIEW_IMAGE_SIZE) {
             throw new ExceedFileException(ErrorCode.EXCEED_FILE);
         }
@@ -80,14 +84,12 @@ public class CafeReviewService {
         String contents, RecommendationType recommendationType, String email) {
         Cafe cafe = checkCafeExist(cafeId);
         Member member = checkMemberExist(email);
-        checkMemberReview(member);
-        if (!files.isEmpty()) {
-            checkFiles(files);
-        }
+        checkMemberReview(member, cafe);
+        checkFiles(files);
 
         Long cafeReviewId = createReviewContent(member, cafe, score, contents, recommendationType);
 
-        String dirName = "reviews/cafe/" + member.getUserEmail();
+        String dirName = "reviews/cafe/" + email;
         createReviewFile(cafeReviewId, files, dirName);
     }
 

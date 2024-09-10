@@ -5,7 +5,6 @@ import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.util.CafeReviewMapper;
 import com.projectX.projectX.global.common.BaseEntity;
-import com.projectX.projectX.global.common.RecommendationType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

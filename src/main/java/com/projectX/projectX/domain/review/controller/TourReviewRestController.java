@@ -3,12 +3,11 @@ package com.projectX.projectX.domain.review.controller;
 import com.projectX.projectX.domain.review.dto.request.ReviewUpdateRequest;
 import com.projectX.projectX.domain.review.dto.response.ReviewGetAllResponse;
 import com.projectX.projectX.domain.review.service.TourReviewService;
-import com.projectX.projectX.global.common.RecommendationType;
+import com.projectX.projectX.domain.review.entity.RecommendationType;
 import com.projectX.projectX.global.common.ResponseDTO;
 import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -71,7 +70,7 @@ public class TourReviewRestController {
     public ResponseDTO<?> updateTravelReview(
         @PathVariable("travel_id") @NotNull Long cafeId,
         @PathVariable("review_id") @NotNull Long reviewId,
-        @RequestBody @Valid ReviewUpdateRequest request,
+        @RequestBody ReviewUpdateRequest request,
         @AuthenticationPrincipal CustomOAuth2User user
     ) {
         tourReviewService.updateTourReview(cafeId, reviewId, request, user.getEmail());
