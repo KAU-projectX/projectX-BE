@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
 
     @Query("""
-    SELECT c.dateFrom, c.dateTo, c.title, c.scheduleType
+    SELECT new com.projectX.projectX.domain.calendar.dto.response.AllCalendarScheduleResponse(c.title, c.dateFrom, c.dateTo, c.scheduleType)
     FROM Calendar c
     WHERE c.user.id = :memberId AND FUNCTION('YEAR', c.dateFrom) = :year
 """)
