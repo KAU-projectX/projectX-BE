@@ -17,7 +17,7 @@ public record CalendarScheduleRequest(
     LocalTime timeFrom,
     LocalTime timeTo,
 
-    @NotEmpty(message = "스케줄명은 필수 입력 값입니다.")
+    @NotNull(message = "스케줄명은 필수 입력 값입니다.")
     String title,
     String location,
     String memo,
