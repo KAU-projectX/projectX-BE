@@ -43,7 +43,10 @@ public enum ErrorCode {
     EXCEED_FILE(HttpStatus.BAD_REQUEST, "사진은 5장을 초과할 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
     CANNOT_UPLOAD_FILE(HttpStatus.BAD_REQUEST, "파일을 업로드할 수 없습니다."),
-    CANNOT_CONVERT_FILE(HttpStatus.BAD_REQUEST, "파일을 변환할 수 없습니다.")
+    CANNOT_CONVERT_FILE(HttpStatus.BAD_REQUEST, "파일을 변환할 수 없습니다."),
+
+    //Calendar
+    INVALID_CALENDAR_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "해당하는 Schedule Type이 존재하지 않습니다.")
     ;//Error Code를 작성한 마지막에 ;를 추가합니다.
 
     private final HttpStatus httpStatus;
