@@ -1,18 +1,21 @@
 package com.projectX.projectX.domain.calendar.dto.response;
 
 import com.projectX.projectX.domain.calendar.entity.ScheduleType;
-import lombok.Builder;
+import java.time.LocalDate;
 
 public record AllCalendarScheduleResponse(
     String title,
-    int startDate,
-    int endDate,
+    LocalDate dateFrom,
+    LocalDate dateTo,
     ScheduleType scheduleType
 ) {
 
-    @Builder
-    public AllCalendarScheduleResponse {
-
+    public AllCalendarScheduleResponse(String title, LocalDate dateFrom, LocalDate dateTo,
+        ScheduleType scheduleType) {
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.title = title;
+        this.scheduleType = scheduleType;
     }
 
 }
