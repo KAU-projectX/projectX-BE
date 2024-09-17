@@ -1,5 +1,8 @@
 package com.projectX.projectX.domain.travel.service;
 
+import com.projectX.projectX.domain.member.entity.Member;
+import com.projectX.projectX.domain.member.exception.InvalidMemberException;
+import com.projectX.projectX.domain.member.repository.MemberRepository;
 import com.projectX.projectX.domain.tour.entity.Tour;
 import com.projectX.projectX.domain.tour.entity.TourImage;
 import com.projectX.projectX.domain.tour.repository.TourRepository;
@@ -33,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TravelService {
 
     private final TourRepository tourRepository;
+    private final MemberRepository memberRepository;
     private static final int RECOMMEND_WORK_SIZE = 3;
 
     @Transactional(readOnly = true)
@@ -82,6 +86,14 @@ public class TravelService {
             .orElseThrow(() -> new TravelNotFoundException(ErrorCode.TRAVEL_NOT_FOUND));
     }
 
+    private Member getMember(String userEmail) {
+        Member member = memberRepository.findByUserEmail(userEmail).orElseThrow(
+            () -> new InvalidMemberException(ErrorCode.INVALID_MEMBER_EXCEPTION)
+        );
+
+        return member;
+    }
+
     private List<String> getTravelImageUrlList(List<TourImage> tourImageList) {
         if (tourImageList.isEmpty()) {
             return null;
@@ -113,5 +125,13 @@ public class TravelService {
         return TravelMapper.toTravelGetRecommendResponse(tours);
     }
 
+    @Transactional
+    public String postTravelScrapInfo(Long travelId, String userEmail) {
+        Tour tour = getTour(travelId);
+        Member member = getMember(userEmail);
+
+        Boolean result = tour.updateScrap(tour, member);
+        return result ? "travel 정보를 스크랩했습니다." : "travel 스크랩을 취소했습니다.";
+    }
 
 }
