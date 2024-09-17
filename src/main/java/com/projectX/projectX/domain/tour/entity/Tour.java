@@ -1,8 +1,10 @@
 package com.projectX.projectX.domain.tour.entity;
 
+import com.projectX.projectX.domain.member.entity.Member;
 import com.projectX.projectX.global.common.BaseEntity;
 import com.projectX.projectX.global.common.ContentType;
 import com.projectX.projectX.global.common.JejuRegion;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -86,6 +89,10 @@ public class Tour extends BaseEntity {
     @Comment("카카오맵 URL")
     private String kakaoMapUrl;
 
+    @Comment("user 스크랩 정보")
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserScrapTour> scraps;
+
     @Builder
     public Tour(Long id, String address, String spec_address, Long zipCode, Long contentId,
         ContentType contentType, JejuRegion jejuRegion, String imageUrl, float mapX, float mapY,
@@ -118,5 +125,24 @@ public class Tour extends BaseEntity {
 
     public void updateKakaoMapUrl(String kakaoMapUrl){
         this.kakaoMapUrl = kakaoMapUrl;
+    }
+
+    public Boolean updateScrap(Tour tour, Member member) {
+        UserScrapTour forRemove = null;
+        for (UserScrapTour scrap : this.scraps) {
+            if (Objects.equals(scrap.getTour(), tour) && Objects.equals(scrap.getMember(),
+                member)) {
+                forRemove = scrap;
+                break;
+            }
+        }
+
+        if (Objects.nonNull(forRemove)) {
+            this.scraps.remove(forRemove);
+            return false;
+        }
+
+        this.scraps.add(new UserScrapTour(tour, member));
+        return true;
     }
 }
