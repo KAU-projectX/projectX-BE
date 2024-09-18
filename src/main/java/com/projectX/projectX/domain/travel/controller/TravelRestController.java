@@ -5,6 +5,7 @@ import com.projectX.projectX.domain.travel.dto.response.TravelGetSpecificRespons
 import com.projectX.projectX.domain.travel.service.TravelService;
 import com.projectX.projectX.global.common.JejuRegion;
 import com.projectX.projectX.global.common.ResponseDTO;
+import com.projectX.projectX.global.security.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -12,8 +13,10 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,6 +60,17 @@ public class TravelRestController {
         @RequestParam @NotBlank JejuRegion jejuRegion
     ) {
         return ResponseDTO.res(travelService.getTravelRecommd(jejuRegion), "travel 추천 조회에 성공했습니다.");
+    }
+
+    @PostMapping("/{travel_id}/scrap")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "travel 스크랩 API", description = "travel 게시물을 스크랩하는 API입니다.")
+    public ResponseDTO<?> postTravelScrapInfo(
+        @PathVariable("travel_id") @NotNull Long travelId,
+        @AuthenticationPrincipal CustomOAuth2User user
+    ) {
+        String result = travelService.postTravelScrapInfo(travelId, user.getEmail());
+        return ResponseDTO.res(result);
     }
 
 }
